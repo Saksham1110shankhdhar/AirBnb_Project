@@ -10,4 +10,6 @@ const storeRouter=express.Router();
 
 storeRouter.get("/",storeController.getHome);
 
+storeRouter.get("/homes",storeController.getHome);
+
 module.exports=storeRouter;

@@ -2,7 +2,7 @@
 const Home=require('../modules/Home');
 
 exports.getAddHome=(req, res, next) => {
-    res.render("Add_Home", { pageTitle: "Add Your Home" });
+    res.render("host/Add_Home", { pageTitle: "Add Your Home" });
   }
 
 exports.postAddHome=(req,res,next)=>{
@@ -19,7 +19,7 @@ exports.postAddHome=(req,res,next)=>{
     if(err){
       res.redirect('/');
     }else{
-      res.render("Home-added", { pageTitle: "Home Added Successfully" });
+      res.render("host/Home-added", { pageTitle: "Home Added Successfully" });
     }
   });
     
