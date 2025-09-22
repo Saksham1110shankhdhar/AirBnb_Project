@@ -1,0 +1,56 @@
+<%- include('partials/head') %>
+
+<body class="bg-gradient-to-br from-blue-100 via-pink-100 to-yellow-100 min-h-screen">
+
+    <%- include('partials/nav') %>
+
+    <main>
+        <div class="min-h-screen bg-gradient-to-br from-blue-100 via-pink-100 to-yellow-100 flex flex-col items-center justify-center py-8">
+            <h1 class="text-4xl font-extrabold text-red-600 mb-8 drop-shadow-lg">Add Your Home</h1>
+
+            <form action="/host/add-home" method="post" class="w-full max-w-md bg-white rounded-lg shadow p-8 flex flex-col space-y-4">
+                <input 
+                    type="text" 
+                    placeholder="Enter Your house Name" 
+                    name="houseName"
+                    class="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+
+                <input 
+                    type="text" 
+                    placeholder="Daily Rent of your Home" 
+                    name="price"
+                    class="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+
+                <input 
+                    type="text" 
+                    placeholder="Enter Your home 's location" 
+                    name="location"
+                    class="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+
+                <input 
+                    type="text" 
+                    placeholder="Rating of the House" 
+                    name="rating"
+                    class="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+
+                <input 
+                    type="text" 
+                    placeholder="Upload a photo" 
+                    name="photoUrl"
+                    class="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+
+                <input 
+                    type="submit" 
+                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200"
+                >
+            </form>
+        </div>
+    </main>
+ 
+</body>
+</html>
