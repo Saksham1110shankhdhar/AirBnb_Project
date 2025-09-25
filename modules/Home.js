@@ -22,6 +22,8 @@ module.exports= class Home{
 
     save(callback) {
 
+        this.id=Math.random().toString();
+
         Home.fetchAll(registeredHome=>{
             registeredHome.push(this);
 
@@ -45,8 +47,14 @@ module.exports= class Home{
             
         })
 
-       
+    }
 
+    static findByID(homeID,callback){
+        Home.fetchAll(homes=>{
+          const home =  homes.find(home=>home.id===homeID);
+
+          callback(home);
+        })
     }
 }
 

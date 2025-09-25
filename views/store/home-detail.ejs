@@ -1,0 +1,127 @@
+
+<%- include('../partials/head') %>
+
+<body class="bg-gradient-to-br from-blue-100 via-pink-100 to-yellow-100 min-h-screen">
+
+    <%- include('../partials/nav') %>
+
+    <main>
+        <div class="min-h-screen bg-gradient-to-br from-blue-100 via-pink-100 to-yellow-100 flex flex-col items-center justify-center py-8">
+            <h1 class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-pink-500 to-yellow-500 mb-10 drop-shadow-2xl tracking-wide">Home Details</h1>
+            <div class="w-full max-w-screen-xl mx-auto bg-white/80 rounded-3xl shadow-2xl p-0 md:p-0 overflow-hidden md:grid md:grid-cols-2">
+                <div class="w-full">
+                    <img src="<%= home.photoUrl %>" alt="Home Photo" class="w-full h-[22rem] md:h-[26rem] object-cover rounded-t-3xl md:rounded-none shadow-lg md:shadow-none border-b-4 border-pink-200 md:border-b-0 md:border-r-4">
+                    <div class="hidden md:block p-4">
+                        <div class="rounded-2xl shadow-2xl border border-pink-100 bg-gradient-to-r from-pink-50/70 via-yellow-50/70 to-blue-50/70 backdrop-blur-md">
+                            <div class="px-6 pt-5 pb-2">
+                                <h4 class="text-sm font-semibold text-pink-600 tracking-wide">Key Details</h4>
+                            </div>
+                            <ul class="px-4 pb-5 space-y-3">
+                                <li class="flex items-center justify-between bg-white/80 rounded-xl shadow px-4 py-3 border border-pink-100">
+                                    <div class="flex items-center gap-3">
+                                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100 text-yellow-500">⭐</span>
+                                        <span class="text-gray-700 font-medium">Rating</span>
+                                    </div>
+                                    <span class="text-xl font-extrabold bg-gradient-to-r from-pink-600 via-red-500 to-yellow-500 bg-clip-text text-transparent"><%= home.rating %> Stars</span>
+                                </li>
+                                <li class="flex items-center justify-between bg-white/80 rounded-xl shadow px-4 py-3 border border-pink-100">
+                                    <div class="flex items-center gap-3">
+                                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-green-600">₹</span>
+                                        <span class="text-gray-700 font-medium">Price</span>
+                                    </div>
+                                    <span class="text-xl font-extrabold bg-gradient-to-r from-green-600 via-emerald-500 to-teal-500 bg-clip-text text-transparent"><%= home.price %> / night</span>
+                                </li>
+                                <li class="flex items-center justify-between bg-white/80 rounded-xl shadow px-4 py-3 border border-pink-100">
+                                    <div class="flex items-center gap-3">
+                                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600">📍</span>
+                                        <span class="text-gray-700 font-medium">Location</span>
+                                    </div>
+                                    <span class="text-xl font-extrabold bg-gradient-to-r from-sky-600 via-indigo-500 to-fuchsia-500 bg-clip-text text-transparent"><%= home.location %></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full px-2 md:px-8 py-8 md:py-10 flex flex-col items-start min-w-0">
+                    <h2 class="text-4xl font-extrabold text-gray-900 mb-6 tracking-tight text-center drop-shadow"> 
+                        <%= home.houseName %>
+                    </h2>
+                    
+                    <% /* Premium Description Section - column width, wider for readability */ %>
+                    <div class="mb-8 w-full">
+                        <div class="bg-gradient-to-r from-yellow-50 via-pink-50 to-blue-50 rounded-2xl shadow-lg px-4 md:px-8 lg:px-10 py-6 border border-pink-100 flex flex-col md:flex-row items-start gap-6">
+                            <div class="w-full md:basis-full md:flex-[1_1_100%] min-w-0">
+                                <h3 class="text-2xl font-bold text-pink-600 mb-2 flex items-center gap-2">
+                                    <span class="inline-block text-3xl">✨</span> 
+                                    Experience Luxury
+                                </h3>
+                                <p class="text-gray-700 text-lg leading-relaxed font-medium italic mb-2 md:mb-0 break-words">
+                                    <% if (home.description) { %>
+                                        <span class="bg-gradient-to-r from-pink-400 via-yellow-400 to-blue-400 bg-clip-text text-transparent font-semibold break-words">
+                                            <%= home.description %>
+                                        </span>
+                                    <% } else { %>
+                                        <span class="bg-gradient-to-r from-pink-400 via-yellow-400 to-blue-400 bg-clip-text text-transparent font-semibold">
+                                            This exquisite home offers a sanctuary of comfort and elegance, blending modern amenities with timeless charm. Indulge in a serene atmosphere, curated for families, couples, or solo travelers seeking a truly premium stay.
+                                        </span>
+                                    <% } %>
+                                </p>
+                            </div>
+                            <div class="flex flex-row flex-wrap gap-3 md:gap-4 w-full md:basis-5/12 md:flex-[0_0_42%] md:max-w-[42%] justify-start items-start md:hidden">
+                                <div class="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-lg shadow border border-pink-100 shrink-0">
+                                    <span class="text-2xl text-yellow-400">⭐</span>
+                                    <span class="font-semibold text-gray-800">Rated <%= home.rating %> Stars</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-lg shadow border border-pink-100 shrink-0">
+                                    <span class="text-2xl text-green-500">₹</span>
+                                    <span class="font-semibold text-gray-800"> <%= home.price %> / night</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-lg shadow border border-pink-100 shrink-0">
+                                    <span class="text-2xl">📍</span>
+                                    <span class="font-semibold text-gray-800"><%= home.location %></span>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+
+                <% /* Features Section */ %>
+                    <div class="mb-10 w-full max-w-3xl">
+                        <div class="bg-gradient-to-r from-pink-50 via-yellow-50 to-blue-50 rounded-2xl shadow p-8 border border-yellow-100">
+                            <h3 class="text-xl font-bold text-yellow-600 mb-4 flex items-center gap-2">
+                                <span class="inline-block text-2xl">🏡</span> 
+                                Premium Features
+                            </h3>
+                            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-gray-700 text-base font-medium list-none">
+                                <% if (home.features && home.features.length) { %>
+                                    <% home.features.forEach(function(feature) { %>
+                                        <li class="flex items-center gap-2">
+                                            <span class="text-pink-400">✔️</span>
+                                            <span><%= feature %></span>
+                                        </li>
+                                    <% }); %>
+                                <% } else { %>
+                                    <li class="flex items-center gap-2"><span class="text-pink-400">✔️</span> Free High-Speed Wi-Fi</li>
+                                    <li class="flex items-center gap-2"><span class="text-pink-400">✔️</span> Air Conditioning & Heating</li>
+                                    <li class="flex items-center gap-2"><span class="text-pink-400">✔️</span> Fully Equipped Gourmet Kitchen</li>
+                                    <li class="flex items-center gap-2"><span class="text-pink-400">✔️</span> 24/7 Security & Concierge</li>
+                                    <li class="flex items-center gap-2"><span class="text-pink-400">✔️</span> Private Parking Space</li>
+                                    <li class="flex items-center gap-2"><span class="text-pink-400">✔️</span> Luxury Bedding & Toiletries</li>
+                                <% } %>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-6 w-full flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-center">
+                        <button class="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-400 hover:from-red-600 hover:to-yellow-500 text-white font-extrabold py-4 px-10 md:px-12 rounded-2xl shadow-xl transition duration-200 text-xl md:text-2xl tracking-wide uppercase ring-2 ring-pink-200 hover:ring-yellow-300 focus:outline-none focus:ring-4 focus:ring-yellow-400">
+                            Book Now
+                        </button>
+                        <div class="flex">
+                            <%- include('../partials/add-to-favourite',{home:home}) %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+ 
+</body>
+</html>
