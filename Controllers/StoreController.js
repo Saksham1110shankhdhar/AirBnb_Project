@@ -1,3 +1,4 @@
+const Favourite = require('../modules/favourite');
 const Home=require('../modules/Home');
 
 
@@ -15,6 +16,36 @@ exports.getHomes=(req,res,next)=>{
         res.render("store/home", {homes:registeredHome, pageTitle:'Hamara Air Bnb'});
     });
 }
+
+exports.getFavourites=(req,res,next)=>{
+
+    Favourite.fetchAll(favouriteIds=>{
+
+        Home.fetchAll(registeredHome=>{
+
+            const favouriteHomes=registeredHome.filter(home=>favouriteIds.includes(home.id));
+
+            res.render("store/favourites", {homes:favouriteHomes, pageTitle:'favourites'});
+        })
+    })
+
+    ;
+}
+
+exports.postAddFavourites=(req,res,next)=>{
+
+    const homeID= req.body.id;
+
+   Favourite.addToFavourite(homeID, error=>{
+    if(error){
+        console.log("Error while adding to favourite",error);
+    }
+
+    res.redirect("/favourites");
+   })
+  
+}
+
 
 exports.getHomeDetails=(req,res,next)=>{
 

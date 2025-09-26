@@ -6,7 +6,7 @@
 
     <main>
         <div class="min-h-screen bg-gradient-to-br from-blue-100 via-pink-100 to-yellow-100 flex flex-col items-center justify-center py-8">
-            <h1 class="text-4xl font-extrabold text-red-600 mb-8 drop-shadow-lg">Here your All Homes</h1>
+            <h1 class="text-4xl font-extrabold text-red-600 mb-8 drop-shadow-lg">Here Your All Favourites Home</h1>
 
             <div class="w-full flex flex-wrap gap-8 justify-center">
                 <% homes.forEach(home => { %>
@@ -30,9 +30,6 @@
                         </div>
 
                         <div class="w-full flex gap-2 mt-auto">
-                            <div class="flex-1">
-                                <%- include('../partials/add-to-favourite', { home: home, btnClass: "py-2 px-2 text-sm" }) %>
-                            </div>
                             <a
                                 href="/home/<%= home.id %>"
                                 class="flex-1 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-400 hover:from-red-600 hover:to-yellow-500 text-white font-bold py-3 rounded-2xl shadow-xl transition duration-200  md:text-lg tracking-wide uppercase ring-2 ring-pink-200 hover:ring-yellow-300 focus:outline-none focus:ring-4 focus:ring-yellow-400 text-xl text-center flex items-center justify-center"

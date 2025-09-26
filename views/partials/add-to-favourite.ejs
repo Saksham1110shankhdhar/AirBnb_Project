@@ -2,7 +2,7 @@
     <input type="hidden" name="id" value="<%= home.id %>">
     <button
       type="submit"
-      class="flex-1 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-400 hover:from-red-600 hover:to-yellow-500 text-white font-bold py-3 rounded-2xl shadow-xl transition duration-200 text-base md:text-lg tracking-wide uppercase ring-2 ring-pink-200 hover:ring-yellow-300 focus:outline-none focus:ring-4 focus:ring-yellow-400"
+      class="flex-1 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-400 hover:from-red-600 hover:to-yellow-500 text-white font-bold rounded-2xl shadow-xl transition duration-200 text-base md:text-lg tracking-wide uppercase ring-2 ring-pink-200 hover:ring-yellow-300 focus:outline-none focus:ring-4 focus:ring-yellow-400 px-4 py-3 <%= typeof btnClass !== 'undefined' ? btnClass : '' %>"
     >
       Add to Favourite
     </button>
