@@ -22,10 +22,17 @@ module.exports= class Home{
 
     save(callback) {
 
-        this.id=Math.random().toString();
-
         Home.fetchAll(registeredHome=>{
-            registeredHome.push(this);
+
+            if(this.id){
+
+                registeredHome=registeredHome.map(home=>home.id !==this.id ? home : this);
+            }else{
+                 this.id=Math.random().toString();
+                 registeredHome.push(this);
+            }
+    
+            
 
             fs.writeFile(
                 homeFilePath,
