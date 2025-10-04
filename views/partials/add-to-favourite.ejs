@@ -1,10 +1,23 @@
 <form action="/favourites" method="POST" class="w-full h-full flex">
-    <input type="hidden" name="id" value="<%= home.id %>">
-    <button
-      type="submit"
-      class="flex-1 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-400 hover:from-red-600 hover:to-yellow-500 text-white font-bold rounded-2xl shadow-xl transition duration-200 text-base md:text-lg tracking-wide uppercase ring-2 ring-pink-200 hover:ring-yellow-300 focus:outline-none focus:ring-4 focus:ring-yellow-400 px-4 py-3 <%= typeof btnClass !== 'undefined' ? btnClass : '' %>"
-    >
-      Add to Favourite
-    </button>
-  </form>
+  <input type="hidden" name="id" value="<%= home.id %>">
+  <button
+  type="submit"
+  class="relative flex items-center justify-center px-[25px] py-[20px] rounded-[35px] bg-[#e8e8e8] border-solid border-[#ffe2e2] border-[9px] text-[25px] font-extrabold font-mono text-[rgb(134,124,124)] shadow-[inset_0px_-2px_6px_0px_rgba(10,37,64,0.35)] transition hover:bg-[#eee] hover:scale-[1.05] cursor-pointer select-none overflow-hidden"
+>
+  <span class="relative w-7 h-7 flex-shrink-0">
+    <svg class="empty absolute inset-0 w-full h-full fill-none stroke-[rgb(255,110,110)] transition-opacity duration-100"
+      viewBox="0 0 24 24" stroke-width="2.2">
+      <path d="M12 21s-6.716-4.463-9.142-7.216C.99 11.75 1.22 8.54 3.343 6.808 5.467 5.076 8.28 5.48 10 7.2L12 9.2l2-2c1.72-1.72 4.533-2.124 6.657-.392 2.123 1.732 2.353 4.942.485 6.976C18.716 16.537 12 21 12 21z"/>
+    </svg>
+    <svg class="filled absolute inset-0 w-full h-full opacity-0 transition-opacity duration-100"
+      viewBox="0 0 24 24" stroke-width="2.2" style="fill:rgb(255,110,110);">
+      <path d="M12 21s-6.716-4.463-9.142-7.216C.99 11.75 1.22 8.54 3.343 6.808 5.467 5.076 8.28 5.48 10 7.2L12 9.2l2-2c1.72-1.72 4.533-2.124 6.657-.392 2.123 1.732 2.353 4.942.485 6.976C18.716 16.537 12 21 12 21z"/>
+    </svg>
+  </span>
+  <span class="ml-2">Like</span>
+</button>
+
+</form>
+
+
   

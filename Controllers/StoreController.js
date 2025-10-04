@@ -20,30 +20,48 @@ exports.getHomes=(req,res,next)=>{
 exports.getFavourites=(req,res,next)=>{
 
     Favourite.fetchAll(favouriteIds=>{
+        console.log("Favourite IDs:", favouriteIds);
 
         Home.fetchAll(registeredHome=>{
+            console.log("All homes:", registeredHome.map(h => ({id: h.id, name: h.houseName})));
 
             const favouriteHomes=registeredHome.filter(home=>favouriteIds.includes(home.id));
+            console.log("Filtered favourite homes:", favouriteHomes.map(h => ({id: h.id, name: h.houseName})));
 
             res.render("store/favourites", {homes:favouriteHomes, pageTitle:'favourites'});
         })
     })
-
-    ;
 }
 
 exports.postAddFavourites=(req,res,next)=>{
 
     const homeID= req.body.id;
+    console.log("Adding home to favourites, ID:", homeID);
 
    Favourite.addToFavourite(homeID, error=>{
     if(error){
         console.log("Error while adding to favourite",error);
+    } else {
+        console.log("Successfully added home to favourites");
     }
 
     res.redirect("/favourites");
    })
   
+}
+
+exports.postDeleteFavourites=(req,res,next)=>{
+    const homeID= req.params.homeID;
+    console.log("Deleting home from favourites, ID:", homeID);
+
+    Favourite.deleteByID(homeID,err=>{
+        if(err){
+            console.log("Error while deleting from favourite",err);
+        } else {
+            console.log("Successfully deleted home from favourites");
+        }
+        res.redirect("/favourites");
+    })
 }
 
 

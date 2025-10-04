@@ -66,9 +66,19 @@ exports.postAddHome=(req,res,next)=>{
         res.redirect("/host/host-homes");
       }
     });
+  }
 
-    
+  exports.postDeleteHome=(req,res,next)=>{
+    const homeID= req.params.homeID;
 
+    Home.deleteByID(homeID,err=>{
+      if(err){
+        console.log("Error while deleting home",err);
+      }
+      res.redirect("/host/host-homes");
+    })
+
+   
   }
 
 

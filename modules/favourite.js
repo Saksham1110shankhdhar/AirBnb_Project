@@ -39,6 +39,19 @@ module.exports= class Favourite{
             })
         }
 
+        static deleteByID(removehomeID, callback){
+            console.log("Favourite.deleteByID called with ID:", removehomeID);
+            Favourite.fetchAll(favouriteIds=>{
+                console.log("Current favourite IDs:", favouriteIds);
+                const new_favouriteIds= favouriteIds.filter(id=>removehomeID !== id);
+                console.log("New favourite IDs after deletion:", new_favouriteIds);
+    
+                fs.writeFile(
+                    favouriteFilePath,
+                    JSON.stringify(new_favouriteIds),callback);
+            })
+        }
+
     
 
 }
