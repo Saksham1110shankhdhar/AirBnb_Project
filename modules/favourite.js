@@ -12,8 +12,6 @@ const favouriteFilePath = path.join(rootDir, 'Data', 'favourite.json');
 module.exports= class Favourite{
 
 
-    
-
     static fetchAll(callback){
 
         fs.readFile(favouriteFilePath, (err, data)=>{

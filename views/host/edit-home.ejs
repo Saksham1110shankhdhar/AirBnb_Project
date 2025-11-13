@@ -11,7 +11,7 @@
             <form action="/host/<%= editing ? "edit-home" : "add-home" %>" method="post" class="w-full max-w-md bg-white rounded-lg shadow p-8 flex flex-col space-y-4">
                 <input type="hidden"
                      name="id"
-                     value="<%= editing ? home.id : "" %>"
+                     value="<%= editing ? home._id : "" %>"
                 >
                 <input 
                     type="text" 
@@ -52,6 +52,13 @@
                     value="<%= editing ? home.photoUrl : "" %>"
                     class="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
+
+                <textarea 
+                  name="description"
+                  placeholder="Describe your home" 
+                  class="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  rows="4"
+                ><%= editing ? home.description : "" %></textarea>
 
                 <input 
                     type="submit" 

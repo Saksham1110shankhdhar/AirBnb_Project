@@ -5,14 +5,15 @@ const Home=require('../modules/Home');
 
 exports.getIndex=(req,res,next)=>{
 
-    Home.fetchAll(registeredHome=>{
+    Home.fetchAll().then(registeredHome =>{
         res.render("store/index", {homes:registeredHome, pageTitle:'Hamara Air Bnb'});
     });
 }
 
+
 exports.getHomes=(req,res,next)=>{
 
-    Home.fetchAll(registeredHome=>{
+    Home.fetchAll().then(registeredHome=>{
         res.render("store/home", {homes:registeredHome, pageTitle:'Hamara Air Bnb'});
     });
 }
@@ -20,12 +21,10 @@ exports.getHomes=(req,res,next)=>{
 exports.getFavourites=(req,res,next)=>{
 
     Favourite.fetchAll(favouriteIds=>{
-        console.log("Favourite IDs:", favouriteIds);
-
-        Home.fetchAll(registeredHome=>{
+        Home.fetchAll().then(registeredHome=>{
             console.log("All homes:", registeredHome.map(h => ({id: h.id, name: h.houseName})));
 
-            const favouriteHomes=registeredHome.filter(home=>favouriteIds.includes(home.id));
+            const favouriteHomes=registeredHome.filter(home=>favouriteIds.includes(home._id));
             console.log("Filtered favourite homes:", favouriteHomes.map(h => ({id: h.id, name: h.houseName})));
 
             res.render("store/favourites", {homes:favouriteHomes, pageTitle:'favourites'});
@@ -69,14 +68,15 @@ exports.getHomeDetails=(req,res,next)=>{
 
     const homeID = req.params.homeID;
 
-    Home.findByID(homeID,home=>{
+    Home.findByID(homeID).then(home=>{
 
-        if(!home){
-            console.log("Home Not Found");
-            return res.redirect("/homes");
-        }
-
-        res.render("store/home-detail", { home:home,pageTitle:'Home-Detail'});
+            if(!home){
+                console.log("Home Not Found");
+                return res.redirect("/homes");
+            }
+    
+            res.render("store/home-detail", { home:home,pageTitle:'Home-Detail'});
+        
     })
 
 }

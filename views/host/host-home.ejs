@@ -32,13 +32,13 @@
                         <div class="w-full flex gap-2 mt-auto">
                            
                             <a
-                                href="/host/edit-home/<%= home.id %>?editing=true"
+                                href="/host/edit-home/<%= home._id %>?editing=true"
                                 class="flex-1 bg-gradient-to-r from-yellow-300 via-orange-500 to-yellow-200 hover:from-blue-600  hover:via-blue-200 hover:to-blue-500 text-white hover:text-gray-700 font-bold py-3 rounded-2xl shadow-xl transition duration-200  md:text-lg tracking-wide uppercase ring-2 ring-pink-200 hover:ring-yellow-300 focus:outline-none focus:ring-4 focus:ring-yellow-400 text-xl text-center flex items-center justify-center"
                             >
                                 Edit
                             </a>
 
-                            <form action="/host/delete-home/<%= home.id %>" method="post">
+                            <form action="/host/delete-home/<%= home._id %>" method="post">
                                 <button type="submit" class="flex-1 bg-gradient-to-r from-red-600 via-red-400 to-red-600 hover:from-orange-600  hover:via-orange-200 hover:to-orange-500 text-gray-800 hover:text-gray-700 font-bold py-3 rounded-2xl shadow-xl transition duration-200 m-2 p-2  md:text-lg tracking-wide uppercase ring-2 ring-pink-200 hover:ring-yellow-300 focus:outline-none focus:ring-4 focus:ring-yellow-400 text-xl text-center flex items-center justify-center">
                                     Delete
                                 </button>

@@ -17,7 +17,7 @@ exports.getAddHome=(req, res, next) => {
     }
   
 
-    Home.findByID(homeID,home=>{
+    Home.findByID(homeID).then(home=>{
       if(!home){
         console.log('Home not found for editing');
 
@@ -25,65 +25,54 @@ exports.getAddHome=(req, res, next) => {
       }
       res.render("host/edit-home", {home:home, editing:editing, pageTitle: "Edit Your Home" });
     })
+  }
 
     
-  }
+  
 
   
 
 
 exports.postAddHome=(req,res,next)=>{
 
-  const {houseName,price,location,rating,photoUrl} = req.body;
+  const {houseName,price,location,rating,photoUrl,description} = req.body;
   // const price = req.body.price;
   // const location = req.body.location;
   // const rating = req.body.rating;
   // const photoUrl = req.body.photoUrl;
 
-  const newHome= new Home(houseName,price,location,rating,photoUrl);
+  const newHome= new Home(houseName,price,location,rating,photoUrl,description);
 
-  newHome.save(err=>{
-    if(err){
-      res.redirect('/');
-    }else{
-      res.render("host/Home-added", { pageTitle: "Home Added Successfully" });
-    }
+  newHome.save().then((rows)=>{
+    res.redirect('/host/host-homes');
   });
     
   }
 
   exports.postEditHome=(req,res,next)=>{
-    const {id,houseName,price,location,rating,photoUrl} = req.body;
+    const {id,houseName,price,location,rating,photoUrl,description} = req.body;
 
-    const newHome= new Home(houseName,price,location,rating,photoUrl);
+    const newHome= new Home(houseName,price,location,rating,photoUrl,description,id);
 
-    newHome.id=id;
-
-    newHome.save(err=>{
+    newHome.save().then(err=>{
       if(err){
         console.log("Error  while updating Home",err);
-      }else{
-        res.redirect("/host/host-homes");
       }
+      res.redirect("/host/host-homes");
     });
   }
 
   exports.postDeleteHome=(req,res,next)=>{
     const homeID= req.params.homeID;
 
-    Home.deleteByID(homeID,err=>{
-      if(err){
-        console.log("Error while deleting home",err);
-      }
+    Home.deleteByID(homeID).then(()=>{
       res.redirect("/host/host-homes");
-    })
-
-   
+    });
   }
 
 
   exports.getHostHomes=(req,res,next)=>{
-    Home.fetchAll(registeredHome=>{
+    Home.fetchAll().then(registeredHome=>{
       res.render("host/host-home", {homes:registeredHome, pageTitle:'Host Homes'});
   });
   }
