@@ -1,54 +1,34 @@
-
-const fs = require('fs');
-
-const path= require('path');
-
-const rootDir= require('../utils/path-util');
-
-
-
-const favouriteFilePath = path.join(rootDir, 'Data', 'favourite.json');
-
 module.exports= class Favourite{
 
+    constructor(homeID){
+        this.homeID=homeID;
+    }
 
-    static fetchAll(callback){
-
-        fs.readFile(favouriteFilePath, (err, data)=>{
-            if(err){
-               callback([]);
-            }else{
-                callback(JSON.parse(data));
+    save() {
+        const db=getDb();
+       
+        return db.collection('favourites').findOne({homeID:this.homeID})
+        .then(existingFav=>{
+            if(!existingFav){
+                return db.collection('favourites').insertOne(this);
             }
 
-            
+            return Promise.resolve();
         })
+        // Insert
+        
+    }
 
- }    
+    static fetchAll(){
+        const db=getDb();
+        return db.collection('favourites').find().toArray();
+    }    
 
 
-    static addToFavourite(homeID,callback){
-            Favourite.fetchAll(FavouriteID=>{
-                FavouriteID.push(homeID);
-    
-                fs.writeFile(
-                    favouriteFilePath,
-                    JSON.stringify(FavouriteID),callback);
-            })
-        }
-
-        static deleteByID(removehomeID, callback){
-            console.log("Favourite.deleteByID called with ID:", removehomeID);
-            Favourite.fetchAll(favouriteIds=>{
-                console.log("Current favourite IDs:", favouriteIds);
-                const new_favouriteIds= favouriteIds.filter(id=>removehomeID !== id);
-                console.log("New favourite IDs after deletion:", new_favouriteIds);
-    
-                fs.writeFile(
-                    favouriteFilePath,
-                    JSON.stringify(new_favouriteIds),callback);
-            })
-        }
+    static deleteByID(homeID){
+        const db=getDb();
+        return db.collection('favourites').deleteOne({homeID:homeID});
+    }
 
     
 

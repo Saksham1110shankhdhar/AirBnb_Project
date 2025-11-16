@@ -5,7 +5,7 @@ const Home=require('../modules/Home');
 
 exports.getIndex=(req,res,next)=>{
 
-    Home.fetchAll().then(registeredHome =>{
+    Home.find().then(registeredHome =>{
         res.render("store/index", {homes:registeredHome, pageTitle:'Hamara Air Bnb'});
     });
 }
@@ -13,18 +13,21 @@ exports.getIndex=(req,res,next)=>{
 
 exports.getHomes=(req,res,next)=>{
 
-    Home.fetchAll().then(registeredHome=>{
+    Home.find().then(registeredHome=>{
         res.render("store/home", {homes:registeredHome, pageTitle:'Hamara Air Bnb'});
     });
 }
 
 exports.getFavourites=(req,res,next)=>{
 
-    Favourite.fetchAll(favouriteIds=>{
-        Home.fetchAll().then(registeredHome=>{
+    Favourite.fetchAll().then(favouriteIds=>{
+        Home.find().then(registeredHome=>{
+            favouriteIds= favouriteIds.map(favId=>favId.homeID);
+
             console.log("All homes:", registeredHome.map(h => ({id: h.id, name: h.houseName})));
 
-            const favouriteHomes=registeredHome.filter(home=>favouriteIds.includes(home._id));
+            const favouriteHomes=registeredHome.filter(home=>favouriteIds.includes(home._id.toString()));
+
             console.log("Filtered favourite homes:", favouriteHomes.map(h => ({id: h.id, name: h.houseName})));
 
             res.render("store/favourites", {homes:favouriteHomes, pageTitle:'favourites'});
@@ -35,17 +38,16 @@ exports.getFavourites=(req,res,next)=>{
 exports.postAddFavourites=(req,res,next)=>{
 
     const homeID= req.body.id;
-    console.log("Adding home to favourites, ID:", homeID);
+   
+    const fav = new Favourite(homeID);
 
-   Favourite.addToFavourite(homeID, error=>{
-    if(error){
-        console.log("Error while adding to favourite",error);
-    } else {
-        console.log("Successfully added home to favourites");
-    }
+    fav.save().then(()=>{
+        res.redirect("/favourites");
+    }).catch(err=>{
+        console.log("Error while adding to favourite",err);
+        res.redirect("/favourites");
+    })
 
-    res.redirect("/favourites");
-   })
   
 }
 
@@ -53,14 +55,13 @@ exports.postDeleteFavourites=(req,res,next)=>{
     const homeID= req.params.homeID;
     console.log("Deleting home from favourites, ID:", homeID);
 
-    Favourite.deleteByID(homeID,err=>{
-        if(err){
-            console.log("Error while deleting from favourite",err);
-        } else {
-            console.log("Successfully deleted home from favourites");
-        }
+    Favourite.deleteByID(homeID).then(()=>{
+        res.redirect("/favourites");
+    }).catch(err=>{
+        console.log("Error while adding to favourite",err);
         res.redirect("/favourites");
     })
+       
 }
 
 
@@ -68,7 +69,7 @@ exports.getHomeDetails=(req,res,next)=>{
 
     const homeID = req.params.homeID;
 
-    Home.findByID(homeID).then(home=>{
+    Home.findById(homeID).then(home=>{
 
             if(!home){
                 console.log("Home Not Found");

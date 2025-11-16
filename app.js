@@ -10,8 +10,6 @@ const bodyParser = require("body-parser");
 // Local Module
 const {hostRouter}=require('./routers/hostRouter');
 const storeRouter=require('./routers/storeRouter');
-
-const {mongoConnect}= require('./utils/database-util');
 const error=require('./Controllers/errorController');
 
 
@@ -42,10 +40,15 @@ console.log("Server is running on port 3000");
 
 //const server = http.createServer(app);
 
+const mongoose= require('mongoose');
+
 
 const Port = 3000;
 
-mongoConnect(()=>{
+const Mongo_Db_Url = "mongodb+srv://saksham_Deployment:root@airbnb.mbjjjtr.mongodb.net/Airbnb?appName=Airbnb";
+
+
+mongoose.connect(Mongo_Db_Url).then(()=>{
   app.listen(Port, () => {
     console.log(`Server is running at http://localhost:${Port}`);
   });

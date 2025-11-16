@@ -1,4 +1,3 @@
-
 const Home=require('../modules/Home');
 
 exports.getAddHome=(req, res, next) => {
@@ -17,7 +16,7 @@ exports.getAddHome=(req, res, next) => {
     }
   
 
-    Home.findByID(homeID).then(home=>{
+    Home.findById(homeID).then(home=>{
       if(!home){
         console.log('Home not found for editing');
 
@@ -26,10 +25,6 @@ exports.getAddHome=(req, res, next) => {
       res.render("host/edit-home", {home:home, editing:editing, pageTitle: "Edit Your Home" });
     })
   }
-
-    
-  
-
   
 
 
@@ -41,9 +36,9 @@ exports.postAddHome=(req,res,next)=>{
   // const rating = req.body.rating;
   // const photoUrl = req.body.photoUrl;
 
-  const newHome= new Home(houseName,price,location,rating,photoUrl,description);
+  const newHome= new Home({houseName,price,location,rating,photoUrl,description});
 
-  newHome.save().then((rows)=>{
+  newHome.save().then(()=>{
     res.redirect('/host/host-homes');
   });
     
@@ -52,27 +47,36 @@ exports.postAddHome=(req,res,next)=>{
   exports.postEditHome=(req,res,next)=>{
     const {id,houseName,price,location,rating,photoUrl,description} = req.body;
 
-    const newHome= new Home(houseName,price,location,rating,photoUrl,description,id);
-
-    newHome.save().then(err=>{
-      if(err){
-        console.log("Error  while updating Home",err);
+    Home.findById(id).then(existingHome=>{
+      if(!existingHome){
+        console.log("Home not found for Editing");
+        return  res.redirect("/host/host-homes");
       }
-      res.redirect("/host/host-homes");
+
+      existingHome.houseName=houseName;
+      existingHome.price=price;
+      existingHome.location=location;
+      existingHome.rating=rating;
+      existingHome.photoUrl=photoUrl;
+      existingHome.description=description;
+
+      return existingHome.save();
+    }).finally(()=>{
+      return  res.redirect("/host/host-homes");
     });
   }
 
   exports.postDeleteHome=(req,res,next)=>{
     const homeID= req.params.homeID;
 
-    Home.deleteByID(homeID).then(()=>{
+    Home.findByIdAndDelete(homeID).then(()=>{
       res.redirect("/host/host-homes");
     });
   }
 
 
   exports.getHostHomes=(req,res,next)=>{
-    Home.fetchAll().then(registeredHome=>{
+    Home.find().then((registeredHome)=>{
       res.render("host/host-home", {homes:registeredHome, pageTitle:'Host Homes'});
   });
   }
