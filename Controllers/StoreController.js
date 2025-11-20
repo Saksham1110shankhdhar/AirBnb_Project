@@ -3,6 +3,8 @@ const Home=require('../modules/Home');
 
 
 
+
+
 exports.getIndex=(req,res,next)=>{
 
     Home.find().then(registeredHome =>{
@@ -20,15 +22,16 @@ exports.getHomes=(req,res,next)=>{
 
 exports.getFavourites=(req,res,next)=>{
 
-    Favourite.fetchAll().then(favouriteIds=>{
+    Favourite.find().then(favouriteIds=>{
         Home.find().then(registeredHome=>{
-            favouriteIds= favouriteIds.map(favId=>favId.homeID);
+            favouriteIds= favouriteIds.map(favId=>favId.homeID.toString());
+           
 
-            console.log("All homes:", registeredHome.map(h => ({id: h.id, name: h.houseName})));
+           // console.log("All homes:", registeredHome.map(h => ({id: h.id, name: h.houseName})));
 
             const favouriteHomes=registeredHome.filter(home=>favouriteIds.includes(home._id.toString()));
 
-            console.log("Filtered favourite homes:", favouriteHomes.map(h => ({id: h.id, name: h.houseName})));
+           
 
             res.render("store/favourites", {homes:favouriteHomes, pageTitle:'favourites'});
         })
@@ -39,7 +42,7 @@ exports.postAddFavourites=(req,res,next)=>{
 
     const homeID= req.body.id;
    
-    const fav = new Favourite(homeID);
+    const fav = new Favourite({homeID});
 
     fav.save().then(()=>{
         res.redirect("/favourites");
@@ -53,12 +56,11 @@ exports.postAddFavourites=(req,res,next)=>{
 
 exports.postDeleteFavourites=(req,res,next)=>{
     const homeID= req.params.homeID;
-    console.log("Deleting home from favourites, ID:", homeID);
-
-    Favourite.deleteByID(homeID).then(()=>{
+    Favourite.findOneAndDelete({homeID})
+    .then(()=>{
         res.redirect("/favourites");
     }).catch(err=>{
-        console.log("Error while adding to favourite",err);
+        console.log("Error while deleting from favourite",err);
         res.redirect("/favourites");
     })
        
