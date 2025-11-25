@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+
+  <!-- Tailwind compiled CSS -->
+  <link rel="stylesheet" href="/output.css" />
+
+  <!-- Tailwind CDN fallback so utilities always load -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-100 via-white to-rose-100">
+
+  <!-- Airbnb Navbar -->
+  <%- include('./nav') %>
+
+<main class="<%= typeof mainClass !== 'undefined' ? mainClass : 'pt-28' %>">
+    <%- content %>
+  </main>
+
+</body>
+</html>
+
