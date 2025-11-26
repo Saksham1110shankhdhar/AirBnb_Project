@@ -1,7 +1,7 @@
 const Home=require('../modules/Home');
 
 exports.getAddHome=(req, res, next) => {
-    res.render("host/edit-home", {editing:false, pageTitle: "Add Your Home" });
+    res.render("host/edit-home", {editing:false, pageTitle: "Add Your Home",isLoggedIN: req.session.isLoggedIN});
   }
 
   exports.getEditHome=(req, res, next) => {
@@ -22,7 +22,7 @@ exports.getAddHome=(req, res, next) => {
 
         return res.redirect('/host/host-homes');
       }
-      res.render("host/edit-home", {home:home, editing:editing, pageTitle: "Edit Your Home" });
+      res.render("host/edit-home", {home:home, editing:editing, pageTitle: "Edit Your Home", isLoggedIN: req.session.isLoggedIN });
     })
   }
   
@@ -77,6 +77,6 @@ exports.postAddHome=(req,res,next)=>{
 
   exports.getHostHomes=(req,res,next)=>{
     Home.find().then((registeredHome)=>{
-      res.render("host/host-home", {homes:registeredHome, pageTitle:'Host Homes'});
+      res.render("host/host-home", {homes:registeredHome, pageTitle:'Host Homes', isLoggedIN: req.session.isLoggedIN});
   });
   }

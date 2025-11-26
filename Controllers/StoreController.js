@@ -8,7 +8,7 @@ const Home=require('../modules/Home');
 exports.getIndex=(req,res,next)=>{
 
     Home.find().then(registeredHome =>{
-        res.render("store/index", {homes:registeredHome, pageTitle:'Hamara Air Bnb'});
+        res.render("store/index", {homes:registeredHome, pageTitle:'Hamara Air Bnb', isLoggedIN: req.session.isLoggedIN});
     });
 }
 
@@ -16,7 +16,7 @@ exports.getIndex=(req,res,next)=>{
 exports.getHomes=(req,res,next)=>{
 
     Home.find().then(registeredHome=>{
-        res.render("store/home", {homes:registeredHome, pageTitle:'Hamara Air Bnb'});
+        res.render("store/home", {homes:registeredHome, pageTitle:'Hamara Air Bnb', isLoggedIN: req.session.isLoggedIN});
     });
 }
 
@@ -25,7 +25,7 @@ exports.getFavourites=(req,res,next)=>{
     Favourite.find().populate("homeID").then(favIDHomes=>{
         const favouriteHomes= favIDHomes.map(favIdhome=>favIdhome.homeID);
        
-            res.render("store/favourites", {homes:favouriteHomes, pageTitle:'favourites'});
+            res.render("store/favourites", {homes:favouriteHomes, pageTitle:'favourites', isLoggedIN: req.session.isLoggedIN});
         
     })
 }
@@ -69,7 +69,7 @@ exports.getHomeDetails=(req,res,next)=>{
             return res.redirect("/homes");
         }
     
-        res.render("store/home-detail", { home: home, pageTitle: 'Home-Detail' });
+        res.render("store/home-detail", { home: home, pageTitle: 'Home-Detail' , isLoggedIN: req.session.isLoggedIN });
     
     }).catch(err => {
         console.error("Error fetching home details:", err);

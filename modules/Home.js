@@ -11,7 +11,7 @@ const homeSchema=new mongoose.Schema({
     description:String
 });
 
-homeSchema.pre('findByIdAndDelete',(next)=>{
+homeSchema.pre('findByIdAndDelete',function(next){
     const homeID=this.getQuery()["_id"];
     favourite.deleteOne({homeID}).then(()=>{
         next();
