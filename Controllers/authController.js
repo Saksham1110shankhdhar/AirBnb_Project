@@ -1,5 +1,6 @@
 const { check, validationResult } = require('express-validator');
 const User = require('../modules/User')
+const bcrypt= require('bcryptjs')
 
 exports.getLogin = (req, res, next) => {
   // provide empty errorMessages so templates that check it won't crash
@@ -11,9 +12,32 @@ exports.getSignUp = (req, res, next) => {
   res.render("auth/signup", { pageTitle: 'Sign Up', isLoggedIN: false, errorMessages: [] });
 }
 
-exports.postLogin = (req, res, next) => {
+exports.postLogin = async (req, res, next) => {
+ 
+
+ const  {email,password}=req.body;
+
+try{
+  const user= await  User.findOne({email});
+  if(!user){
+    throw new Error('User not found');
+  }
+
+  const isMatch= await bcrypt.compare(password,user.password);
+
+  if(!isMatch){
+    throw new Error('Password does not match')
+  }
+
   req.session.isLoggedIN = true;
-  res.redirect("/");
+  req.session.user=user;
+  await req.session.save();
+  res.redirect('/');
+
+}catch(err){
+  res.render("auth/login", { pageTitle: 'Login', isLoggedIN: false, errorMessages: [err.message] });
+}
+
 }
 
 const firstNameValidator =
@@ -98,19 +122,24 @@ exports.postSignUp = [
     }
     const {firstName,lastName,email,password,role}=req.body;
 
-    const user = new User({firstName,lastName,email,password,role});
+    bcrypt.hash(password,12).then(hashpassword=>{
+      console.log(hashpassword);
+      const user = new User({firstName,lastName,email,password :hashpassword,role});
 
-    user.save().then(result=>{
-      console.log(result);
-      res.redirect("/login");
-    }).catch(err=>{
-      return res.status(422).render("auth/signup", {
-        pageTitle: 'Sign Up',
-        isLoggedIN: false,
-        errorMessages:[err],
-        oldInput: req.body,
+      user.save().then(result=>{
+        console.log(result);
+        res.redirect("/login");
+      }).catch(err=>{
+        return res.status(422).render("auth/signup", {
+          pageTitle: 'Sign Up',
+          isLoggedIN: false,
+          errorMessages:[err],
+          oldInput: req.body,
+        });
       });
     })
+
+ 
 
    
   }

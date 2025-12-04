@@ -1,3 +1,8 @@
 exports.useError=(req, res, next) => {
-    res.status(404).render( "404", {pageTitle : 'Page Not Found', isLoggedIN: req.session.isLoggedIN});
+    res.status(404).render( "404", 
+      {
+      pageTitle : 'Page Not Found',
+      isLoggedIN: req.session.isLoggedIN,
+      user: req.session.user,
+    });
   }

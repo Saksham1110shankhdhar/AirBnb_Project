@@ -70,20 +70,7 @@
 
               <form action="/signup" method="POST" class="space-y-4">
 
-                 <% if(typeof errorMessages!=='undefined' && errorMessages && errorMessages.length >0) { %>
-
-                   <ul class="list-disc list-inside space-y-1">
-
-                     <% errorMessages.forEach(errorMessage=>{ %>
-                      <li> <%= errorMessage %> </li>
-                      <% }) %>
-
-
-                    </ul>
-
-
-                  <% } %>
-
+                  <%- include('../partials/errorMessages') %>
 
 
 

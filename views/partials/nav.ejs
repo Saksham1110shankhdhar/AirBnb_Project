@@ -6,10 +6,15 @@
             
 
             <% if(isLoggedIN) {%>
+                <% if(user.role ==='guest') {%>
                 <a href="/homes" class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow transition duration-200">Homes</a>
-                <a href="/host/add-home" class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow transition duration-200">Add Home</a>
                 <a href="/favourites" class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow transition duration-200">Favourite</a>
+
+                <% }else{%>
+
                 <a href="/host/host-homes" class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow transition duration-200">Host Homes</a>
+                <a href="/host/add-home" class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow transition duration-200">Add Home</a>
+                <% } %>
             <% } %>
         </div>
 

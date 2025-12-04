@@ -1,7 +1,8 @@
 const Home=require('../modules/Home');
 
 exports.getAddHome=(req, res, next) => {
-    res.render("host/edit-home", {editing:false, pageTitle: "Add Your Home",isLoggedIN: req.session.isLoggedIN});
+    res.render("host/edit-home", {editing:false, pageTitle: "Add Your Home",isLoggedIN: req.session.isLoggedIN,
+      user: req.session.user,});
   }
 
   exports.getEditHome=(req, res, next) => {
@@ -22,7 +23,8 @@ exports.getAddHome=(req, res, next) => {
 
         return res.redirect('/host/host-homes');
       }
-      res.render("host/edit-home", {home:home, editing:editing, pageTitle: "Edit Your Home", isLoggedIN: req.session.isLoggedIN });
+      res.render("host/edit-home", {home:home, editing:editing, pageTitle: "Edit Your Home", isLoggedIN: req.session.isLoggedIN,
+        user: req.session.user });
     })
   }
   
@@ -36,7 +38,7 @@ exports.postAddHome=(req,res,next)=>{
   // const rating = req.body.rating;
   // const photoUrl = req.body.photoUrl;
 
-  const newHome= new Home({houseName,price,location,rating,photoUrl,description});
+  const newHome= new Home({houseName,price,location,rating,photoUrl,description,host:req.session.user._id,});
 
   newHome.save().then(()=>{
     res.redirect('/host/host-homes');
@@ -76,7 +78,8 @@ exports.postAddHome=(req,res,next)=>{
 
 
   exports.getHostHomes=(req,res,next)=>{
-    Home.find().then((registeredHome)=>{
-      res.render("host/host-home", {homes:registeredHome, pageTitle:'Host Homes', isLoggedIN: req.session.isLoggedIN});
+    Home.find({host:req.session.user._id}).then((registeredHome)=>{
+      res.render("host/host-home", {homes:registeredHome, pageTitle:'Host Homes', isLoggedIN: req.session.isLoggedIN,
+        user: req.session.user,});
   });
   }
