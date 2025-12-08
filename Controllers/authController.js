@@ -3,9 +3,9 @@ const User = require('../modules/User');
 const bcrypt= require('bcryptjs');
 const sendGrid= require('@sendgrid/mail');
 const { passwordValidator, confirmPassword, firstNameValidator, lastNameValidator, emailValidator, UserValidator, termAndConditionValidator } = require('./validations');
-const SEND_GRID_KEY= "REMOVED";
 
-sendGrid.setApiKey(SEND_GRID_KEY);
+sendGrid.setApiKey(process.env.SEND_GRID_KEY);
+
 
 const otp_Time_Out=60*1000;
 
