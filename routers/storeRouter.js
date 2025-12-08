@@ -22,6 +22,8 @@ storeRouter.post("/favourites",storeController.postAddFavourites);
 
 storeRouter.post("/favourites/delete/:homeID",storeController.postDeleteFavourites);
 
+storeRouter.get('/rules/:houseID', storeController.getRules);
+
 
 
 

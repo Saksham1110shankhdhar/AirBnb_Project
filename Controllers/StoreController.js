@@ -1,5 +1,10 @@
+const path=require('path');
+
+
+
 const Home=require('../modules/Home');
 const User = require('../modules/User');
+const rootDir= require('../utils/path-util');
 
 exports.getIndex=(req,res,next)=>{
 
@@ -87,4 +92,14 @@ exports.getHomeDetails=(req,res,next)=>{
         res.status(500).send("Internal Server Error");
     });
 
+}
+
+exports.getRules=(req,res,next)=>{
+    //const houseID=req.params.houseID;
+
+    const rulesFileName='AirbnbRulebook.pdf';
+
+    const filePath=path.join(rootDir,'rules',rulesFileName);
+
+    res.download(filePath,'Rules.pdf');
 }

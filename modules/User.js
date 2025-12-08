@@ -11,6 +11,8 @@ const userSchema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"Home",
     }],
+    otp:String,
+    otpExpiry:Date,
 });
 
 module.exports=mongoose.model("User",userSchema);

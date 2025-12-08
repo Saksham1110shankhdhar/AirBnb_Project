@@ -8,7 +8,7 @@
         <div class="min-h-screen bg-gradient-to-br from-blue-100 via-pink-100 to-yellow-100 flex flex-col items-center justify-center py-8">
             <h1 class="text-4xl font-extrabold text-red-600 mb-8 drop-shadow-lg"><%= editing ? "Edit" : "Add" %> Your Home</h1>
 
-            <form action="/host/<%= editing ? "edit-home" : "add-home" %>" method="post" class="w-full max-w-md bg-white rounded-lg shadow p-8 flex flex-col space-y-4">
+            <form action="/host/<%= editing ? "edit-home" : "add-home" %>" method="post" enctype="multipart/form-data"  class="w-full max-w-md bg-white rounded-lg shadow p-8 flex flex-col space-y-4">
                 <input type="hidden"
                      name="id"
                      value="<%= editing ? home._id : "" %>"
@@ -46,10 +46,8 @@
                 >
 
                 <input 
-                    type="text" 
-                    placeholder="Upload a photo" 
-                    name="photoUrl"
-                    value="<%= editing ? home.photoUrl : "" %>"
+                    type="file" 
+                    name="photo"
                     class="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
 

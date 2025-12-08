@@ -7,6 +7,7 @@ const mongoose= require('mongoose');
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const mongoSession = require('connect-mongodb-session');
+const multer = require('multer');
 
 
 // Local Module
@@ -22,7 +23,30 @@ const Mongo_Db_Url = "mongodb+srv://saksham_Deployment:root@airbnb.mbjjjtr.mongo
 const sessionStore= new MongoDBStore({
   uri:Mongo_Db_Url,
   collection:'sessions'
-})
+});
+
+const storage=multer.diskStorage({
+  destination: (req,file,cb)=>{
+    cb(null,'uploads/');
+  },
+
+  filename: (req, file, cb) => {
+    const safeDate = new Date().toISOString().replace(/:/g, '-');   // ← FIX!
+    cb(null, safeDate + '-' + file.originalname);
+  }
+  
+});
+
+const fileFilter=(req,file,cb)=>{
+  // const isValidFile=file.mimetype === 'image/png'||
+  //                   file.mimetype === 'image/png';
+
+const isValidFile =['image/png','image/jpeg','image/jpg','image/webp'].includes(file.mimetype);                 
+  cb(null,isValidFile);
+  
+}
+
+
 
 const app = express();
 
@@ -31,12 +55,17 @@ app.set('views','views');
 
 
 app.use(bodyParser.urlencoded({extended:true}));
+
+app.use(multer({storage,fileFilter}).single('photo'));
+
 const rootDir = require('./utils/path-util');
 
 // Serve static assets so files are available via / and /Public paths
 const publicDir = path.join(rootDir, 'Public');
 app.use(express.static(publicDir));
 app.use('/Public', express.static(publicDir));
+
+app.use('/uploads',express.static(path.join(rootDir,'uploads')))
 
 app.use(session({
   secret: 'AirBnb Secret key',

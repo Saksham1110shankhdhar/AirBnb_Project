@@ -1,11 +1,119 @@
-const { check, validationResult } = require('express-validator');
-const User = require('../modules/User')
-const bcrypt= require('bcryptjs')
+const { validationResult } = require("express-validator");
+const User = require('../modules/User');
+const bcrypt= require('bcryptjs');
+const sendGrid= require('@sendgrid/mail');
+const { passwordValidator, confirmPassword, firstNameValidator, lastNameValidator, emailValidator, UserValidator, termAndConditionValidator } = require('./validations');
+const SEND_GRID_KEY= "REMOVED";
+
+sendGrid.setApiKey(SEND_GRID_KEY);
+
+const otp_Time_Out=60*1000;
+
+
 
 exports.getLogin = (req, res, next) => {
   // provide empty errorMessages so templates that check it won't crash
   res.render("auth/login", { pageTitle: 'Login', isLoggedIN: false, errorMessages: [] });
 }
+
+exports.getforgotPassword=(req,res,next)=>{
+  res.render("auth/forgot", { pageTitle: 'Forgot Password', isLoggedIN: false, errorMessages: [] });
+}
+
+exports.getResetPassword=(req,res,next)=>{
+  const {email}=req.query;
+  res.render("auth/resetPassword", { 
+    pageTitle: 'Reset Password', 
+    isLoggedIN: false, 
+    email:email,
+    errorMessages: [],
+
+  });
+}
+
+exports.postResetPassword=[
+  passwordValidator,
+  confirmPassword,
+  async (req,res,next)=>{
+  const {email,otp,password,confirmPassword}=req.body;
+
+  const errors = validationResult(req);
+
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/resetPassword", {
+      pageTitle: 'Reset Password',
+      isLoggedIN: false,
+      email:email,
+      errorMessages: errors.array().map(err => err.msg),
+    });
+  }
+
+  try{
+    const user=await User.findOne({email});
+
+    if(!user){
+      throw new Error('User not found');
+    }else if(user.otpExpiry<Date.now()){
+      throw new Error('OTP Expired');
+    }else if(user.otp!==otp){
+      throw new Error('OTP does not match');
+    }
+
+    const hasedPassword=bcrypt.hash(password,12);
+    user.password=(await hasedPassword).toString();
+    user.otp=undefined;
+    user.otpExpiry=undefined;
+
+    await user.save();
+
+    res.redirect('/login');
+
+
+
+  }catch(err){
+    console.log(err)
+    res.render("auth/resetPassword", { 
+      pageTitle: 'Reset Password', 
+      isLoggedIN: false, 
+      email:email,
+      errorMessages: [err.message],
+    });
+  }
+
+}]
+
+exports.postforgotPassword=async (req,res,next)=>{
+
+  const {email}=req.body;
+ 
+
+  try{
+    const user=await User.findOne({email});
+    
+    const otp=Math.floor(100000+Math.random()*900000).toString();
+    user.otp=otp;
+    user.otpExpiry=Date.now()+25*otp_Time_Out;
+    await user.save();
+
+    const ForgotEmail={
+      to:email,
+      from:'raincho145@gmail.com',
+      subject:'Here is your otp to reset your password !!!',
+      html:`<h1> OTP is ${otp}</h1>
+           <p> Enter your OTP on <a href="http://localhost:3000/reset-password?email=${email}">Reset Password</a> page.</p> `
+    }
+
+      await sendGrid.send(ForgotEmail);
+
+    res.redirect(`/reset-password?email=${email}`);
+  }catch(err){
+    res.render("auth/forgot", { pageTitle: 'Forgot Password', isLoggedIN: false, errorMessages: [err.message] });
+
+  }
+}
+
+
 
 exports.getSignUp = (req, res, next) => {
   // always send errorMessages (empty on initial GET)
@@ -40,62 +148,6 @@ try{
 
 }
 
-const firstNameValidator =
-  check('firstName')
-    .notEmpty()
-    .withMessage('First Name is required')
-    .trim()
-    .isLength({ min: 2 })
-    .withMessage('First Name must be at least 2 characters long')
-    .matches(/^[a-zA-Z]+$/)
-    .withMessage('First Name must contain only letters');
-
-const lastNameValidator =
-    check('lastName')
-      .trim()
-      .matches(/^[a-zA-Z]*$/)
-      .withMessage('Last Name must contain only letters');
-
-const emailValidator=
-    check('email')
-      .isEmail()
-      .withMessage('Please enter a valid email')
-      .normalizeEmail();
-
-const passwordValidator=
-     check('password')
-     .trim()
-     .isLength({ min: 6 })
-     .withMessage('Password must be at least 6 characters long')
-     .matches(/[a-z]/)
-     .withMessage('Password should have atleast one small alphabate')
-     .matches(/[A-Z]/)
-     .withMessage('Password should have atleast one capital alphabate')
-     .matches(/[@#$%&]/)
-     .withMessage('Password should have atleast one special character');
-
-const confirmPassword=
-    check('confirmPassword')
-    .trim()
-    .custom((value,{req})=>{
-      if(value!==req.body.password){
-        throw new Error('Confirm Password does not match with Password ');
-      }
-      return true;
-    })   
-
-const UserValidator=
-    check('role')
-    .trim()
-    .notEmpty()
-    .withMessage('Account type is required')
-    .isIn(['guest','host'])
-    .withMessage('Account type is invalid')
-
-const termAndConditionValidator=
-    check('agree')
-    .notEmpty()
-    .withMessage('Terms and Condition must be accepted')
     
 
 
@@ -108,7 +160,7 @@ exports.postSignUp = [
   UserValidator,
   termAndConditionValidator,
 
-  (req, res, next) => {
+async (req, res, next) => {
     console.log("user came to sign up :", req.body);
     const errors = validationResult(req);
 
@@ -122,26 +174,34 @@ exports.postSignUp = [
     }
     const {firstName,lastName,email,password,role}=req.body;
 
-    bcrypt.hash(password,12).then(hashpassword=>{
-      console.log(hashpassword);
+    try{
+
+      const hashpassword=await bcrypt.hash(password,12);
       const user = new User({firstName,lastName,email,password :hashpassword,role});
 
-      user.save().then(result=>{
-        console.log(result);
-        res.redirect("/login");
-      }).catch(err=>{
-        return res.status(422).render("auth/signup", {
-          pageTitle: 'Sign Up',
-          isLoggedIN: false,
-          errorMessages:[err],
-          oldInput: req.body,
-        });
+       await user.save();
+
+       const welcomeEmail={
+         to:email,
+         from:'raincho145@gmail.com',
+         subject:'Welcome to Hamara AirBnb !!!',
+         html:`<h1> Welcome ${firstName} ${lastName} Please Book Your First Vacatiob Home With us.</h1>`
+       }
+
+       await sendGrid.send(welcomeEmail);
+
+       res.redirect("/login");
+
+    }catch(err){
+      return res.status(422).render("auth/signup", {
+        pageTitle: 'Sign Up',
+        isLoggedIN: false,
+        errorMessages:[err],
+        oldInput: req.body,
       });
-    })
+    }
 
- 
-
-   
+    
   }
 ];
 

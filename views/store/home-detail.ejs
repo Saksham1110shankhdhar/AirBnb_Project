@@ -111,13 +111,37 @@
                         </div>
                     </div>
                     <div class="mt-6 w-full flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-center">
+
+                        <!-- BOOK NOW BUTTON -->
                         <button class="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-400 hover:from-red-600 hover:to-yellow-500 text-white font-extrabold py-4 px-10 md:px-12 rounded-2xl shadow-xl transition duration-200 text-xl md:text-2xl tracking-wide uppercase ring-2 ring-pink-200 hover:ring-yellow-300 focus:outline-none focus:ring-4 focus:ring-yellow-400">
                             Book Now
                         </button>
+                    
+                        <!-- LIKE BUTTON -->
                         <div class="flex">
                             <%- include('../partials/add-to-favourite', { home: home, btnClass: "py-3 px-8" }) %>
                         </div>
+                    
+                        <!-- 👉 NEW HOUSE RULES BUTTON -->
+                        <a
+                            href="/rules/<%= home._id %>"
+                            target="_blank"
+                            class="flex items-center gap-3 px-10 md:px-12 py-4 
+                                   rounded-2xl shadow-xl font-extrabold text-xl md:text-2xl
+                                   bg-gradient-to-r from-blue-200 via-pink-200 to-yellow-200
+                                   border-2 border-pink-300 text-pink-700
+                                   hover:from-blue-300 hover:via-pink-300 hover:to-yellow-300
+                                   hover:shadow-2xl hover:scale-105 
+                                   transition-all duration-300 ease-out"
+                        >
+                            <span class="text-3xl">📘</span>
+                            <span>House Rules</span>
+                        </a>
+
+
+                    
                     </div>
+                    
                 </div>
             </div>
         </div>

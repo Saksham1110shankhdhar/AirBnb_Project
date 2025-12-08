@@ -1,4 +1,5 @@
 const Home=require('../modules/Home');
+const { deleteFile } = require('../utils/file');
 
 exports.getAddHome=(req, res, next) => {
     res.render("host/edit-home", {editing:false, pageTitle: "Add Your Home",isLoggedIN: req.session.isLoggedIN,
@@ -32,7 +33,20 @@ exports.getAddHome=(req, res, next) => {
 
 exports.postAddHome=(req,res,next)=>{
 
-  const {houseName,price,location,rating,photoUrl,description} = req.body;
+  console.log("BODY:", req.body);   // debug
+  console.log("FILE:", req.file);   // debug
+
+
+
+  const {houseName,price,location,rating,description} = req.body;
+  console.log(req.body);
+  console.log("home-photo",req.file);
+
+  if(!req.file){
+    return res.status(400).send('No proper format of image provided');
+  }
+
+  const photoUrl= "/"+req.file.path;
   // const price = req.body.price;
   // const location = req.body.location;
   // const rating = req.body.rating;
@@ -47,8 +61,11 @@ exports.postAddHome=(req,res,next)=>{
   }
 
   exports.postEditHome=(req,res,next)=>{
-    const {id,houseName,price,location,rating,photoUrl,description} = req.body;
+    const {id,houseName,price,location,rating,description} = req.body;
 
+    console.log(req.body);
+    console.log("home-photo",req.file);
+  
     Home.findById(id).then(existingHome=>{
       if(!existingHome){
         console.log("Home not found for Editing");
@@ -59,7 +76,13 @@ exports.postAddHome=(req,res,next)=>{
       existingHome.price=price;
       existingHome.location=location;
       existingHome.rating=rating;
-      existingHome.photoUrl=photoUrl;
+
+      if(req.file){
+
+        deleteFile(existingHome.photoUrl.substring(1));
+
+        existingHome.photoUrl="/"+req.file.path;
+      }
       existingHome.description=description;
 
       return existingHome.save();
