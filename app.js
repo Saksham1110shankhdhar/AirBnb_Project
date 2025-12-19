@@ -1,15 +1,19 @@
 const ENV=process.env.NODE_ENV || 'production'
 
-// Load environment variables
-const envResult = require('dotenv').config({
-  path : `.env.${ENV}`
-});
+// Load environment variables (non-blocking)
+// Azure uses Application Settings, so .env files are optional
+try {
+  const envResult = require('dotenv').config({
+    path : `.env.${ENV}`
+  });
 
-// Verify Razorpay credentials are loaded
-if (envResult.error) {
-  console.warn(`⚠️  Warning: Could not load .env.${ENV} file:`, envResult.error.message);
-  console.warn('   Trying to load default .env file...');
-  require('dotenv').config(); // Try default .env
+  if (envResult.error && process.env.NODE_ENV !== 'production') {
+    console.warn(`⚠️  Warning: Could not load .env.${ENV} file:`, envResult.error.message);
+    console.warn('   Trying to load default .env file...');
+    require('dotenv').config(); // Try default .env
+  }
+} catch (err) {
+  console.warn('⚠️  Could not load .env file (this is OK if using Azure App Settings):', err.message);
 }
 
 // Log Razorpay credential status (without exposing secrets)
@@ -61,11 +65,28 @@ const error=require('./Controllers/errorController');
 
 const MongoDBStore=mongoSession(session);
 
-const Mongo_Db_Url = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@airbnb.mbjjjtr.mongodb.net/${process.env.MONGO_DB_DATABASE}`;
+// Build MongoDB connection string with validation
+const mongoUsername = process.env.MONGO_DB_USERNAME || '';
+const mongoPassword = process.env.MONGO_DB_PASSWORD || '';
+const mongoDatabase = process.env.MONGO_DB_DATABASE || 'Airbnb';
+
+const Mongo_Db_Url = `mongodb+srv://${mongoUsername}:${mongoPassword}@airbnb.mbjjjtr.mongodb.net/${mongoDatabase}`;
+
+// Validate MongoDB credentials
+if (!mongoUsername || !mongoPassword) {
+  console.warn('⚠️  Warning: MongoDB credentials not found in environment variables');
+  console.warn('   Please set MONGO_DB_USERNAME and MONGO_DB_PASSWORD');
+}
 
 const sessionStore= new MongoDBStore({
   uri:Mongo_Db_Url,
   collection:'sessions'
+});
+
+// Handle session store errors (non-blocking)
+sessionStore.on('error', (error) => {
+  console.error('❌ MongoDB session store error:', error);
+  // Don't exit - app can still run with memory sessions
 });
 
 const storage=multer.diskStorage({
@@ -154,6 +175,15 @@ app.use(session({
 //   next();
 // })
 
+// Health check endpoint (must be before other routes for Azure)
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 app.use("/",storeRouter);
 
 app.use("/host",(req,res,next)=>{
@@ -181,14 +211,41 @@ console.log("Server is running on port 3000");
 
 
 
-const Port = process.env.PORT|| 3000;
+const Port = process.env.PORT || 3000;
 
+// Start server first, then connect to database
+// This ensures Azure health checks pass even if DB connection is slow
+const server = app.listen(Port, () => {
+  console.log(`Server is running at http://localhost:${Port}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'production'}`);
+});
 
+// Connect to MongoDB with error handling and timeout
+const mongoConnectionOptions = {
+  serverSelectionTimeoutMS: 10000, // 10 seconds timeout
+  socketTimeoutMS: 45000,
+};
 
-
-mongoose.connect(Mongo_Db_Url).then(()=>{
-  app.listen(Port, () => {
-    console.log(`Server is running at http://localhost:${Port}`);
+mongoose.connect(Mongo_Db_Url, mongoConnectionOptions)
+  .then(() => {
+    console.log('✅ MongoDB connected successfully');
+  })
+  .catch((err) => {
+    console.error('❌ MongoDB connection error:', err.message);
+    console.error('   Server will continue running but database operations will fail');
+    console.error('   Please check your MONGO_DB_USERNAME, MONGO_DB_PASSWORD, and MONGO_DB_DATABASE environment variables');
+    // Don't exit - let the server run for health checks
   });
-})
+
+// Handle process termination gracefully
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, closing server...');
+  server.close(() => {
+    console.log('Server closed');
+    mongoose.connection.close(false, () => {
+      console.log('MongoDB connection closed');
+      process.exit(0);
+    });
+  });
+});
 
