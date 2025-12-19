@@ -1,7 +1,5 @@
 {
-    "watch" : ".",
-    "ext" : "json,js",
-    "ignore" : ["Data/"],
-    "exec" : "node app.js"
-
+    "watch": ["app.js", "Controllers", "routers", "modules", "views", "utils"],
+    "ext": "json,js",
+    "ignore": ["Data/", "Public/", "uploads/", "**/*.log", "**/access.log"]
 }

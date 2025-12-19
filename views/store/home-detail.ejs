@@ -1,151 +1,142 @@
-
 <%- include('../partials/head') %>
 
-<body class="bg-gradient-to-br from-blue-100 via-pink-100 to-yellow-100 min-h-screen">
+<body class="min-h-screen bg-gradient-to-b from-[#FFF6D8] via-[#FFF1C1] to-[#FFE8EC]">
 
-    <%- include('../partials/nav') %>
+<%- include('../partials/nav') %>
 
-    <main>
-        <div class="min-h-screen bg-gradient-to-br from-blue-100 via-pink-100 to-yellow-100 flex flex-col items-center justify-center py-8">
-            <h1 class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-pink-500 to-yellow-500 mb-10 drop-shadow-2xl tracking-wide">Home Details</h1>
-            <div class="w-full max-w-screen-xl mx-auto bg-white/80 rounded-3xl shadow-2xl p-0 md:p-0 overflow-hidden md:grid md:grid-cols-2">
-                <div class="w-full">
-                    <img src="<%= home.photoUrl %>" alt="Home Photo" class="w-full h-[22rem] md:h-[26rem] object-cover rounded-t-3xl md:rounded-none shadow-lg md:shadow-none border-b-4 border-pink-200 md:border-b-0 md:border-r-4">
-                    <div class="hidden md:block p-4">
-                        <div class="rounded-2xl shadow-2xl border border-pink-100 bg-gradient-to-r from-pink-50/70 via-yellow-50/70 to-blue-50/70 backdrop-blur-md">
-                            <div class="px-6 pt-5 pb-2">
-                                <h4 class="text-sm font-semibold text-pink-600 tracking-wide">Key Details</h4>
-                            </div>
-                            <ul class="px-4 pb-5 space-y-3">
-                                <li class="flex items-center justify-between bg-white/80 rounded-xl shadow px-4 py-3 border border-pink-100">
-                                    <div class="flex items-center gap-3">
-                                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100 text-yellow-500">⭐</span>
-                                        <span class="text-gray-700 font-medium">Rating</span>
-                                    </div>
-                                    <span class="text-xl font-extrabold bg-gradient-to-r from-pink-600 via-red-500 to-yellow-500 bg-clip-text text-transparent"><%= home.rating %> Stars</span>
-                                </li>
-                                <li class="flex items-center justify-between bg-white/80 rounded-xl shadow px-4 py-3 border border-pink-100">
-                                    <div class="flex items-center gap-3">
-                                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-green-600">₹</span>
-                                        <span class="text-gray-700 font-medium">Price</span>
-                                    </div>
-                                    <span class="text-xl font-extrabold bg-gradient-to-r from-green-600 via-emerald-500 to-teal-500 bg-clip-text text-transparent"><%= home.price %> / night</span>
-                                </li>
-                                <li class="flex items-center justify-between bg-white/80 rounded-xl shadow px-4 py-3 border border-pink-100">
-                                    <div class="flex items-center gap-3">
-                                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600">📍</span>
-                                        <span class="text-gray-700 font-medium">Location</span>
-                                    </div>
-                                    <span class="text-xl font-extrabold bg-gradient-to-r from-sky-600 via-indigo-500 to-fuchsia-500 bg-clip-text text-transparent"><%= home.location %></span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="w-full px-2 md:px-8 py-8 md:py-10 flex flex-col items-start min-w-0">
-                    <h2 class="text-4xl font-extrabold text-gray-900 mb-6 tracking-tight text-center drop-shadow"> 
-                        <%= home.houseName %>
-                    </h2>
-                    
-                    <% /* Premium Description Section - column width, wider for readability */ %>
-                    <div class="mb-8 w-full">
-                        <div class="bg-gradient-to-r from-yellow-50 via-pink-50 to-blue-50 rounded-2xl shadow-lg px-4 md:px-8 lg:px-10 py-6 border border-pink-100 flex flex-col md:flex-row items-start gap-6">
-                            <div class="w-full md:basis-full md:flex-[1_1_100%] min-w-0">
-                                <h3 class="text-2xl font-bold text-pink-600 mb-2 flex items-center gap-2">
-                                    <span class="inline-block text-3xl">✨</span> 
-                                    Experience Luxury
-                                </h3>
-                                <p class="text-gray-700 text-lg leading-relaxed font-medium italic mb-2 md:mb-0 break-words">
-                                    <% if (home.description) { %>
-                                        <span class="bg-gradient-to-r from-pink-400 via-yellow-400 to-blue-400 bg-clip-text text-transparent font-semibold break-words">
-                                            <%= home.description %>
-                                        </span>
-                                    <% } else { %>
-                                        <span class="bg-gradient-to-r from-pink-400 via-yellow-400 to-blue-400 bg-clip-text text-transparent font-semibold">
-                                            This exquisite home offers a sanctuary of comfort and elegance, blending modern amenities with timeless charm. Indulge in a serene atmosphere, curated for families, couples, or solo travelers seeking a truly premium stay.
-                                        </span>
-                                    <% } %>
-                                </p>
-                            </div>
-                            <div class="flex flex-row flex-wrap gap-3 md:gap-4 w-full md:basis-5/12 md:flex-[0_0_42%] md:max-w-[42%] justify-start items-start md:hidden">
-                                <div class="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-lg shadow border border-pink-100 shrink-0">
-                                    <span class="text-2xl text-yellow-400">⭐</span>
-                                    <span class="font-semibold text-gray-800">Rated <%= home.rating %> Stars</span>
-                                </div>
-                                <div class="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-lg shadow border border-pink-100 shrink-0">
-                                    <span class="text-2xl text-green-500">₹</span>
-                                    <span class="font-semibold text-gray-800"> <%= home.price %> / night</span>
-                                </div>
-                                <div class="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-lg shadow border border-pink-100 shrink-0">
-                                    <span class="text-2xl">📍</span>
-                                    <span class="font-semibold text-gray-800"><%= home.location %></span>
-                                </div>
-                            </div>
-                    </div>
-                </div>
+<main class="pt-24 pb-32">
 
-                <% /* Features Section */ %>
-                    <div class="mb-10 w-full max-w-3xl">
-                        <div class="bg-gradient-to-r from-pink-50 via-yellow-50 to-blue-50 rounded-2xl shadow p-8 border border-yellow-100">
-                            <h3 class="text-xl font-bold text-yellow-600 mb-4 flex items-center gap-2">
-                                <span class="inline-block text-2xl">🏡</span> 
-                                Premium Features
-                            </h3>
-                            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-gray-700 text-base font-medium list-none">
-                                <% if (home.features && home.features.length) { %>
-                                    <% home.features.forEach(function(feature) { %>
-                                        <li class="flex items-center gap-2">
-                                            <span class="text-pink-400">✔️</span>
-                                            <span><%= feature %></span>
-                                        </li>
-                                    <% }); %>
-                                <% } else { %>
-                                    <li class="flex items-center gap-2"><span class="text-pink-400">✔️</span> Free High-Speed Wi-Fi</li>
-                                    <li class="flex items-center gap-2"><span class="text-pink-400">✔️</span> Air Conditioning & Heating</li>
-                                    <li class="flex items-center gap-2"><span class="text-pink-400">✔️</span> Fully Equipped Gourmet Kitchen</li>
-                                    <li class="flex items-center gap-2"><span class="text-pink-400">✔️</span> 24/7 Security & Concierge</li>
-                                    <li class="flex items-center gap-2"><span class="text-pink-400">✔️</span> Private Parking Space</li>
-                                    <li class="flex items-center gap-2"><span class="text-pink-400">✔️</span> Luxury Bedding & Toiletries</li>
-                                <% } %>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="mt-6 w-full flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-center">
+  <!-- HEADER -->
+  <section class="max-w-7xl mx-auto px-6 mb-20 text-center">
+    <h1 class="text-5xl md:text-6xl font-black tracking-tight
+               text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-pink-500 to-orange-500">
+      <%= home.houseName %>
+    </h1>
+    <p class="mt-4 text-slate-700 text-lg max-w-3xl mx-auto">
+      A thoughtfully curated luxury stay in <strong><%= home.location %></strong>,
+      crafted for comfort, elegance, and unforgettable moments.
+    </p>
+  </section>
 
-                        <!-- BOOK NOW BUTTON -->
-                        <button class="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-400 hover:from-red-600 hover:to-yellow-500 text-white font-extrabold py-4 px-10 md:px-12 rounded-2xl shadow-xl transition duration-200 text-xl md:text-2xl tracking-wide uppercase ring-2 ring-pink-200 hover:ring-yellow-300 focus:outline-none focus:ring-4 focus:ring-yellow-400">
-                            Book Now
-                        </button>
-                    
-                        <!-- LIKE BUTTON -->
-                        <div class="flex">
-                            <%- include('../partials/add-to-favourite', { home: home, btnClass: "py-3 px-8" }) %>
-                        </div>
-                    
-                        <!-- 👉 NEW HOUSE RULES BUTTON -->
-                        <a
-                            href="/rules/<%= home._id %>"
-                            target="_blank"
-                            class="flex items-center gap-3 px-10 md:px-12 py-4 
-                                   rounded-2xl shadow-xl font-extrabold text-xl md:text-2xl
-                                   bg-gradient-to-r from-blue-200 via-pink-200 to-yellow-200
-                                   border-2 border-pink-300 text-pink-700
-                                   hover:from-blue-300 hover:via-pink-300 hover:to-yellow-300
-                                   hover:shadow-2xl hover:scale-105 
-                                   transition-all duration-300 ease-out"
-                        >
-                            <span class="text-3xl">📘</span>
-                            <span>House Rules</span>
-                        </a>
+  <!-- MAIN GRID -->
+  <section class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-16">
 
+    <!-- LEFT CONTENT -->
+    <div class="lg:col-span-2 space-y-16">
 
-                    
-                    </div>
-                    
-                </div>
-            </div>
+      <!-- IMAGE -->
+      <div class="relative rounded-[2.8rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.25)] group bg-white">
+        <img
+          src="<%= home.photoUrl %>"
+          alt="<%= home.houseName %>"
+          class="w-full h-[500px] object-cover group-hover:scale-[1.06] transition duration-700"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent"></div>
+
+        <div class="absolute bottom-8 left-8 text-white">
+          <h2 class="text-3xl font-extrabold drop-shadow-lg">
+            <%= home.houseName %>
+          </h2>
+          <p class="text-pink-200 mt-2 text-lg">
+            Location: <%= home.location %>
+          </p>
         </div>
-    </main>
- 
+      </div>
+
+      <!-- ABOUT -->
+      <div class="bg-white/95 backdrop-blur rounded-3xl p-10 shadow-xl border border-rose-200">
+        <h3 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-orange-500 mb-4">
+          About this stay
+        </h3>
+
+        <p class="text-slate-700 leading-relaxed text-lg">
+          Welcome to <strong><%= home.houseName %></strong>, a premium residence designed
+          to deliver hotel-level comfort with the warmth of a personal home.
+          Ideal for couples, families, or professionals seeking peace, privacy,
+          and modern luxury.
+        </p>
+      </div>
+
+      <!-- FEATURES -->
+      <div class="bg-white/95 backdrop-blur rounded-3xl p-10 shadow-xl border border-indigo-200">
+        <h3 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 mb-8">
+          What this place offers
+        </h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-slate-700 text-lg">
+          <div>High-speed Wi-Fi</div>
+          <div>Air conditioning & heating</div>
+          <div>Fully equipped kitchen</div>
+          <div>24/7 security</div>
+          <div>Private parking</div>
+          <div>Premium bedding</div>
+        </div>
+      </div>
+
+      <!-- REVIEWS -->
+      <div class="bg-white/95 backdrop-blur rounded-3xl p-10 shadow-xl border border-yellow-200">
+        <h3 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500 mb-8">
+          Guest reviews
+        </h3>
+
+        <div class="space-y-6">
+          <div class="bg-white p-5 rounded-2xl shadow text-slate-700">
+            Rating: 5/5 — “Absolutely loved the stay. Clean, peaceful, and beautifully designed.”
+          </div>
+          <div class="bg-white p-5 rounded-2xl shadow text-slate-700">
+            Rating: 5/5 — “Felt like a boutique hotel. Comfortable beds and great location.”
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT BOOKING CARD -->
+    <aside class="lg:col-span-1">
+      <div class="sticky top-28 bg-white/95 backdrop-blur rounded-3xl shadow-xl p-8 space-y-7 border border-slate-200">
+
+        <div class="flex justify-between items-center">
+          <div class="text-4xl font-extrabold text-slate-800">
+            Rs <%= home.price %>
+            <span class="text-base font-medium text-slate-500">/ night</span>
+          </div>
+          <div class="text-amber-500 font-bold text-lg">
+            Rating: <%= home.rating %>
+          </div>
+        </div>
+
+        <a href="/booking/<%= home._id %>"
+          class="w-full block text-center py-4 rounded-2xl
+                 text-white font-bold text-lg
+                 bg-gradient-to-r from-pink-500 via-rose-500 to-orange-500
+                 hover:brightness-110 transition shadow-xl">
+         Book Now
+       </a>
+       
+        
+        
+
+        <%- include('../partials/add-to-favourite', {
+          home: home,
+          btnClass: "w-full py-3 rounded-xl bg-slate-900 text-white font-semibold hover:bg-slate-800 transition"
+        }) %>
+
+        <a href="/rules/<%= home._id %>"
+           class="block w-full text-center py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold
+                  hover:bg-slate-200 transition border border-slate-300">
+          View House Rules
+        </a>
+
+        <p class="text-center text-sm text-slate-500 pt-2">
+          Verified listing · Secure booking · Instant confirmation
+        </p>
+
+      </div>
+    </aside>
+
+  </section>
+
+</main>
+
 </body>
 </html>

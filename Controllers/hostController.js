@@ -6,28 +6,29 @@ exports.getAddHome=(req, res, next) => {
       user: req.session.user,});
   }
 
-  exports.getEditHome=(req, res, next) => {
-
-    const homeID= req.params.homeID;
-
-    const editing= req.query.editing==='true';
-
-  if(!editing){
-      console.log('Editing flag not set properly');
-       return res.redirect('/host/host-homes');
-    }
+  exports.getEditHome = (req, res, next) => {
+    const homeID = req.params.homeID;
   
-
-    Home.findById(homeID).then(home=>{
-      if(!home){
-        console.log('Home not found for editing');
-
-        return res.redirect('/host/host-homes');
-      }
-      res.render("host/edit-home", {home:home, editing:editing, pageTitle: "Edit Your Home", isLoggedIN: req.session.isLoggedIN,
-        user: req.session.user });
-    })
-  }
+    Home.findById(homeID)
+      .then(home => {
+        if (!home) {
+          console.log('Home not found for editing');
+          return res.redirect('/host/host-homes');
+        }
+  
+        res.render('host/edit-home', {
+          home: home,
+          editing: true, // ✅ force edit mode
+          pageTitle: 'Edit Your Home',
+          isLoggedIN: req.session.isLoggedIN,
+          user: req.session.user
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        res.redirect('/host/host-homes');
+      });
+  };
   
 
 
@@ -60,36 +61,44 @@ exports.postAddHome=(req,res,next)=>{
     
   }
 
-  exports.postEditHome=(req,res,next)=>{
-    const {id,houseName,price,location,rating,description} = req.body;
-
-    console.log(req.body);
-    console.log("home-photo",req.file);
+  exports.postEditHome = (req, res, next) => {
+    const { homeID, houseName, price, location, rating, description } = req.body;
   
-    Home.findById(id).then(existingHome=>{
-      if(!existingHome){
-        console.log("Home not found for Editing");
-        return  res.redirect("/host/host-homes");
-      }
-
-      existingHome.houseName=houseName;
-      existingHome.price=price;
-      existingHome.location=location;
-      existingHome.rating=rating;
-
-      if(req.file){
-
-        deleteFile(existingHome.photoUrl.substring(1));
-
-        existingHome.photoUrl="/"+req.file.path;
-      }
-      existingHome.description=description;
-
-      return existingHome.save();
-    }).finally(()=>{
-      return  res.redirect("/host/host-homes");
-    });
-  }
+    console.log('EDIT BODY:', req.body);
+    console.log('EDIT FILE:', req.file);
+  
+    Home.findById(homeID)
+      .then(existingHome => {
+        if (!existingHome) {
+          console.log('Home not found for Editing');
+          return res.redirect('/host/host-homes');
+        }
+  
+        existingHome.houseName = houseName;
+        existingHome.price = price;
+        existingHome.location = location;
+        existingHome.rating = rating;
+        existingHome.description = description;
+  
+        // update image only if new one uploaded
+        if (req.file) {
+          if (existingHome.photoUrl) {
+            deleteFile(existingHome.photoUrl.substring(1));
+          }
+          existingHome.photoUrl = '/uploads/' + req.file.filename;
+        }
+  
+        return existingHome.save();
+      })
+      .then(() => {
+        res.redirect('/host/host-homes');
+      })
+      .catch(err => {
+        console.log(err);
+        res.redirect('/host/host-homes');
+      });
+  };
+  
 
   exports.postDeleteHome=(req,res,next)=>{
     const homeID= req.params.homeID;

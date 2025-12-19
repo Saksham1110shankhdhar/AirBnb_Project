@@ -1,55 +1,178 @@
 <%- include('../partials/head') %>
 
-<body class="bg-gradient-to-br from-blue-100 via-pink-100 to-yellow-100 min-h-screen">
+<body class="min-h-screen bg-[radial-gradient(ellipse_at_top,_#fde68a,_#fdf2f8,_#e0e7ff)]">
 
-    <%- include('../partials/nav') %>
+  <%- include('../partials/nav') %>
 
-    <main>
-        <div class="min-h-screen bg-gradient-to-br from-blue-100 via-pink-100 to-yellow-100 flex flex-col items-center justify-center py-8">
-            <h1 class="text-4xl font-extrabold text-red-600 mb-8 drop-shadow-lg">Here Your All Favourites Home</h1>
+  <main class="pt-20 pb-28">
 
-            <div class="w-full flex flex-wrap gap-8 justify-center">
-                <% homes.forEach(home => { %>
-                    <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between items-center w-80">
-                        <img src="<%= home.photoUrl %>" alt="Home Photo" class="w-full h-48 object-cover rounded-lg mb-4 border border-gray-200">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center"><%= home.houseName %></h2>
-                        <div class="w-full flex flex-col gap-2 text-gray-700 mb-8">
-                            <div>
-                                <span class="font-semibold text-lg text-red-600">Price:</span>
-                                <span class="font-extrabold text-2xl text-green-600 ml-1">₹<%= home.price %></span>
-                                <span class="text-gray-500 text-sm">/ night</span>
-                            </div>
-                            <div>
-                                <span class="font-semibold"><span class="inline-block align-middle mr-1">📍</span>Location:</span>
-                                <span class="ml-1"><%= home.location %></span>
-                            </div>
-                            <div>
-                                <span class="font-semibold"><span class="inline-block align-middle mr-1 text-yellow-400">⭐</span>Rating:</span>
-                                <span class="ml-1 font-bold text-yellow-600"><%= home.rating %></span>
-                            </div>
-                        </div>
+    <!-- ================= HERO ================= -->
+    <section class="max-w-7xl mx-auto px-6 text-center">
+      <h1 class="text-4xl md:text-5xl font-black text-slate-900">
+        Your
+        <span class="bg-gradient-to-r from-rose-500 via-orange-400 to-amber-400 bg-clip-text text-transparent">
+          Favourite Stays
+        </span>
+      </h1>
 
-                        <div class="w-full flex gap-2 mt-auto">
-                            <a
-                                href="/home/<%= home._id %>"
-                                class="flex-1 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-400 hover:from-red-600 hover:to-yellow-500 text-white font-bold p-2 py-3 rounded-2xl shadow-xl transition duration-200  md:text-lg tracking-wide uppercase ring-2 ring-pink-200 hover:ring-yellow-300 focus:outline-none focus:ring-4 focus:ring-yellow-400 text-xl text-center flex items-center justify-center"
-                            >
-                                Details
-                            </a>
+      <p class="mt-3 text-lg text-slate-600 max-w-2xl mx-auto">
+        All the homes you loved — saved in one place for easy access.
+      </p>
+    </section>
 
+    <!-- ================= GRID ================= -->
+    <section class="mt-16 max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 place-items-center">
 
-                            <form action="/favourites/delete/<%= home._id %>" method="POST">
-                                <button type="submit" class="flex-1 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-400 hover:from-red-600 hover:to-yellow-500 text-white font-bold py-3  p-2 rounded-2xl shadow-xl transition duration-200  md:text-lg tracking-wide uppercase ring-2 ring-pink-200 hover:ring-yellow-300 focus:outline-none focus:ring-4 focus:ring-yellow-400 text-xl text-center flex items-center justify-center">Remove</button>
-                            </form>
-                        </div>
-                    </div>
-                <% }); %>
+        <% if (homes.length === 0) { %>
+          <div class="col-span-full text-center text-slate-500 text-lg">
+            ❤️ No favourites yet. Start exploring homes!
+          </div>
+        <% } %>
+
+        <% homes.forEach(home => { %>
+          <article class="fav-card">
+
+            <!-- IMAGE -->
+            <div class="relative overflow-hidden">
+              <img
+                src="<%= home.photoUrl %>"
+                alt="<%= home.houseName %>"
+                class="fav-img"
+              />
+
+              <span class="price-badge">
+                ₹<%= home.price %> / night
+              </span>
+
+              <span class="rating-badge">
+                ⭐ <%= home.rating %>
+              </span>
             </div>
-        </div>
-    </main>
+
+            <!-- CONTENT -->
+            <div class="p-5 flex flex-col flex-grow">
+              <h3 class="text-lg font-extrabold text-slate-900">
+                <%= home.houseName %>
+              </h3>
+
+              <p class="mt-1 text-sm text-slate-500">
+                📍 <%= home.location %>
+              </p>
+
+              <!-- ACTIONS -->
+              <div class="mt-6 flex gap-3">
+                <a href="/home/<%= home._id %>" class="details-btn flex-1">
+                  Details
+                </a>
+
+                <form action="/favourites/delete/<%= home._id %>" method="POST" class="flex-1">
+                  <button type="submit" class="remove-btn w-full">
+                    Remove
+                  </button>
+                </form>
+              </div>
+            </div>
+
+          </article>
+        <% }) %>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= STYLES ================= -->
+  <style>
+    /* ---------- card ---------- */
+    .fav-card {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(14px);
+      border-radius: 28px;
+      overflow: hidden;
+      width: 100%;
+      max-width: 320px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+      transition: all .45s cubic-bezier(.4,0,.2,1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .fav-card:hover {
+      transform: translateY(-10px) scale(1.03);
+      box-shadow: 0 40px 90px rgba(0,0,0,0.18);
+    }
+
+    /* ---------- image ---------- */
+    .fav-img {
+      height: 190px;
+      width: 100%;
+      object-fit: cover;
+      transition: transform .8s ease;
+    }
+
+    .fav-card:hover .fav-img {
+      transform: scale(1.12);
+    }
+
+    /* ---------- badges ---------- */
+    .price-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(255,255,255,0.9);
+      padding: .35rem .75rem;
+      border-radius: 999px;
+      font-size: .75rem;
+      font-weight: 800;
+    }
+
+    .rating-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(15,23,42,.9);
+      color: white;
+      padding: .35rem .6rem;
+      border-radius: 999px;
+      font-size: .75rem;
+      font-weight: 700;
+    }
+
+    /* ---------- buttons ---------- */
+    .details-btn {
+      height: 44px;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #f43f5e, #f59e0b);
+      color: white;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 16px 40px rgba(249,115,22,.55);
+      transition: all .35s ease;
+    }
+
+    .details-btn:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 26px 65px rgba(249,115,22,.75);
+    }
+
+    .remove-btn {
+      height: 44px;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      font-weight: 800;
+      box-shadow: 0 14px 35px rgba(239,68,68,.55);
+      transition: all .35s ease;
+    }
+
+    .remove-btn:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 26px 65px rgba(239,68,68,.75);
+    }
+  </style>
 
 </body>
 </html>
-
-
-

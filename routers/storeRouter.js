@@ -1,31 +1,21 @@
+const express = require('express');
+const storeRouter = express.Router();
 
+const isAuth = require('../middleware/isAuth');
+const storeController = require('../Controllers/storeController');
 
-const express= require('express');
+storeRouter.get('/', storeController.getIndex);
 
-const storeController=require('../Controllers/StoreController');
+storeRouter.get('/homes', storeController.getHomes);
 
+storeRouter.get('/home/:homeID', isAuth, storeController.getHomeDetails);
 
-const storeRouter=express.Router();
+storeRouter.get('/favourites', storeController.getFavourites);
 
+storeRouter.post('/favourites', storeController.postAddFavourites);
 
-storeRouter.get("/",storeController.getIndex);
-
-storeRouter.get("/homes",storeController.getHomes);
-
-// storeRouter.get("/homes/:homeID",storeController.getHomeDetails);
-
-storeRouter.get("/home/:homeID",storeController.getHomeDetails);
-
-storeRouter.get("/favourites",storeController.getFavourites);
-
-storeRouter.post("/favourites",storeController.postAddFavourites);
-
-storeRouter.post("/favourites/delete/:homeID",storeController.postDeleteFavourites);
+storeRouter.post('/favourites/delete/:homeID', storeController.postDeleteFavourites);
 
 storeRouter.get('/rules/:houseID', storeController.getRules);
 
-
-
-
-
-module.exports=storeRouter;
+module.exports = storeRouter;

@@ -13,7 +13,7 @@ const otp_Time_Out=60*1000;
 
 exports.getLogin = (req, res, next) => {
   // provide empty errorMessages so templates that check it won't crash
-  res.render("auth/login", { pageTitle: 'Login', isLoggedIN: false, errorMessages: [] });
+  res.render("auth/login", { pageTitle: 'Login', isLoggedIN: false, errorMessages: [],  loginRequired: req.query.loginRequired === '1'});
 }
 
 exports.getforgotPassword=(req,res,next)=>{
@@ -98,7 +98,7 @@ exports.postforgotPassword=async (req,res,next)=>{
 
     const ForgotEmail={
       to:email,
-      from:'raincho145@gmail.com',
+      from: process.env.FROM_EMAIL,
       subject:'Here is your otp to reset your password !!!',
       html:`<h1> OTP is ${otp}</h1>
            <p> Enter your OTP on <a href="http://localhost:3000/reset-password?email=${email}">Reset Password</a> page.</p> `
@@ -183,7 +183,7 @@ async (req, res, next) => {
 
        const welcomeEmail={
          to:email,
-         from:'raincho145@gmail.com',
+         from: process.env.FROM_EMAIL,
          subject:'Welcome to Hamara AirBnb !!!',
          html:`<h1> Welcome ${firstName} ${lastName} Please Book Your First Vacatiob Home With us.</h1>`
        }

@@ -7,19 +7,14 @@
 
   <!-- Tailwind compiled CSS -->
   <link rel="stylesheet" href="/output.css" />
-
-  <!-- Tailwind CDN fallback so utilities always load -->
-  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-indigo-100 via-white to-rose-100">
 
-  <!-- Airbnb Navbar -->
+<body
+  class="min-h-screen"
+ 
+>
+
+  <!-- Navbar -->
   <%- include('./nav') %>
 
-<main class="<%= typeof mainClass !== 'undefined' ? mainClass : 'pt-28' %>">
-    <%- content %>
-  </main>
-
-</body>
-</html>
-
+  <!-- Page Content START -->

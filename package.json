@@ -1,5 +1,5 @@
 {
-  "name": "airbnb",
+  "name": "SkyBnB",
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tailwind": "npx tailwindcss -i ./Public/input.css -o ./Public/output.css --watch",
-    "start": "concurrently \"npm run tailwind\" \"nodemon app.js\""
+    "start": "concurrently \"npm run tailwind\" \"nodemon --config nodemon.json app.js\""
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
@@ -20,13 +20,17 @@
     "@tailwindcss/cli": "^4.1.13",
     "bcryptjs": "^3.0.3",
     "body-parser": "^2.2.0",
+    "compression": "^1.8.1",
     "connect-mongodb-session": "^5.0.0",
+    "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "express-validator": "^7.3.1",
+    "helmet": "^8.1.0",
     "mongodb": "^6.20.0",
     "mongoose": "^8.19.4",
+    "morgan": "^1.10.1",
     "multer": "^2.0.2",
     "mysql2": "^3.15.3",
     "tailwindcss": "^4.1.13"

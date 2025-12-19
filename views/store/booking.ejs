@@ -1,0 +1,189 @@
+<%- include('../partials/head', { pageTitle: 'Confirm Booking' }) %>
+<%- include('../partials/nav') %>
+
+<main class="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#FFF6D8] to-[#FFE8EC]">
+
+  <div class="bg-white rounded-3xl shadow-2xl p-10 w-[360px] text-center">
+    <h2 class="text-2xl font-extrabold text-green-600 mb-2">
+      Confirm Your Booking
+    </h2>
+
+    <p class="text-slate-600 mb-4">
+      You're about to book <strong><%= home.houseName %></strong><br>
+      in <%= home.location %>
+    </p>
+
+    <div class="text-3xl font-black text-slate-800 mb-6">
+      ₹<%= home.price %> / night
+    </div>
+
+    <!-- IMPORTANT -->
+    <button
+      id="payBtn"
+      class="w-full py-4 rounded-2xl text-white font-bold text-lg
+             bg-gradient-to-r from-pink-500 via-rose-500 to-orange-500
+             hover:brightness-110 transition shadow-xl
+             disabled:opacity-50 disabled:cursor-not-allowed">
+      <span id="btnText">Pay & Confirm Booking</span>
+      <span id="btnLoader" class="hidden">Processing...</span>
+    </button>
+  </div>
+
+</main>
+
+<!-- Razorpay MUST be loaded -->
+<script src="https://checkout.razorpay.com/v1/checkout.js" 
+        onerror="console.error('❌ Failed to load Razorpay script')"></script>
+
+<script>
+// Wait for both DOM and Razorpay to be ready
+function initPayment() {
+  const payBtn = document.getElementById('payBtn');
+
+  if (!payBtn) {
+    console.error('❌ Pay button not found');
+    return;
+  }
+
+  // Check if Razorpay is loaded
+  if (typeof Razorpay === 'undefined') {
+    console.error('❌ Razorpay is not loaded. Please check your internet connection.');
+    alert('Payment gateway is not available. Please refresh the page and try again.');
+    return;
+  }
+
+  const homePrice = <%- home.price %>;
+  const homeId = '<%= home._id %>';
+  const razorpayKey = '<%= razorpayKeyId %>';
+
+  if (!razorpayKey) {
+    console.error('❌ Razorpay key is missing');
+    alert('Payment configuration error. Please contact support.');
+    return;
+  }
+
+  payBtn.addEventListener('click', async () => {
+    try {
+      // Disable button and show loading
+      payBtn.disabled = true;
+      document.getElementById('btnText').classList.add('hidden');
+      document.getElementById('btnLoader').classList.remove('hidden');
+      
+      console.log('👉 Pay button clicked');
+      console.log('💰 Amount:', homePrice);
+      console.log('🔑 Razorpay Key:', razorpayKey ? 'Present' : 'Missing');
+
+      if (!homePrice || homePrice <= 0) {
+        throw new Error('Invalid booking amount');
+      }
+
+      const res = await fetch('/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: homePrice
+        })
+      });
+
+      console.log('📡 Order creation response status:', res.status);
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.error('❌ Order creation failed:', errorData);
+        throw new Error(errorData.error || 'Failed to create order');
+      }
+
+      const order = await res.json();
+      console.log('✅ Order created:', order);
+      
+      if (!order || !order.id) {
+        console.error('❌ Invalid order response:', order);
+        throw new Error('Invalid order response from server');
+      }
+
+      const options = {
+        key: razorpayKey,
+        amount: order.amount,
+        currency: "INR",
+        name: "Hamara Airbnb",
+        description: "Home Booking",
+        order_id: order.id,
+
+        handler: async function (response) {
+          console.log('✅ Payment success', response);
+          
+          try {
+            // Show loading state
+            payBtn.disabled = true;
+            document.getElementById('btnText').textContent = 'Saving booking...';
+            
+            const bookingRes = await fetch('/book/' + homeId, { 
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' }
+            });
+
+            console.log('📝 Booking response status:', bookingRes.status);
+
+            if (!bookingRes.ok) {
+              const errorData = await bookingRes.json().catch(() => ({ error: 'Unknown error' }));
+              console.error('❌ Booking failed:', errorData);
+              throw new Error(errorData.error || 'Booking failed');
+            }
+
+            const bookingData = await bookingRes.json();
+            console.log('✅ Booking saved successfully:', bookingData);
+            
+            // Redirect to success page
+            window.location.href = '/booking/success';
+            
+          } catch (err) {
+            console.error('❌ Booking error:', err);
+            alert('Payment successful but booking failed: ' + (err.message || 'Please contact support.'));
+            
+            // Re-enable button
+            payBtn.disabled = false;
+            document.getElementById('btnText').textContent = 'Pay & Confirm Booking';
+          }
+        },
+        prefill: {
+          name: "<%= user && user.name ? user.name : '' %>",
+          email: "<%= user && user.email ? user.email : '' %>"
+        },
+        theme: {
+          color: "#FF385C"
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+
+    } catch (err) {
+      console.error('❌ Payment error:', err);
+      alert('Payment failed: ' + (err.message || 'Please try again.'));
+      
+      // Re-enable button
+      payBtn.disabled = false;
+      document.getElementById('btnText').classList.remove('hidden');
+      document.getElementById('btnLoader').classList.add('hidden');
+    }
+  });
+}
+
+// Initialize when DOM is ready and Razorpay is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    // Wait a bit for Razorpay script to load
+    setTimeout(initPayment, 100);
+  });
+} else {
+  // DOM already loaded, wait for Razorpay
+  setTimeout(initPayment, 100);
+}
+
+// Fallback: try again after 1 second if Razorpay still not loaded
+setTimeout(() => {
+  if (typeof Razorpay === 'undefined') {
+    console.warn('⚠️ Razorpay still not loaded after 1 second');
+  }
+}, 1000);
+</script>

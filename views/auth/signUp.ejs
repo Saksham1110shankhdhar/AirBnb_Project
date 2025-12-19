@@ -1,230 +1,192 @@
 <%- include('../partials/layout', {
   title: 'Sign up • Airbnb',
   mainClass: 'pt-0',
-  isLoggedIN: false,
-  content: ''
+  isLoggedIN: false
 }) %>
-      <section class="relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden bg-gradient-to-br from-rose-50 via-white to-indigo-100 px-4">
-        <!-- Floating gradient circles background -->
-        <div class="pointer-events-none absolute inset-0 -z-10">
-          <div class="absolute -left-32 top-10 h-72 w-72 rounded-full bg-rose-400/40 blur-3xl animate-pulse"></div>
-          <div class="absolute -right-28 bottom-10 h-80 w-80 rounded-full bg-sky-400/40 blur-3xl animate-[ping_5s_linear_infinite]"></div>
+
+<section class="relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden bg-gradient-to-br from-rose-50 via-white to-indigo-100 px-4">
+
+  <!-- Floating gradient background -->
+  <div class="pointer-events-none absolute inset-0 -z-10">
+    <div class="absolute -left-32 top-10 h-72 w-72 rounded-full bg-rose-400/40 blur-3xl animate-pulse"></div>
+    <div class="absolute -right-28 bottom-10 h-80 w-80 rounded-full bg-sky-400/40 blur-3xl animate-[ping_5s_linear_infinite]"></div>
+  </div>
+
+  <!-- Main card -->
+  <div class="relative mx-auto flex w-full max-w-5xl flex-col overflow-hidden rounded-[32px] bg-white/80 shadow-[0_30px_80px_rgba(15,23,42,0.20)] backdrop-blur-xl md:flex-row">
+
+    <!-- LEFT PROMO PANEL -->
+    <div class="relative hidden w-full bg-gradient-to-br from-rose-600 via-rose-500 to-amber-400 p-8 text-white md:flex md:w-1/2 md:flex-col md:justify-between">
+
+      <div class="space-y-4">
+        <p class="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-1 text-xs font-semibold uppercase tracking-[0.25em]">
+          <span class="h-2 w-2 rounded-full bg-emerald-300 animate-ping"></span>
+          Join millions of Airbnb guests
+        </p>
+
+        <h1 class="text-3xl font-semibold leading-tight md:text-4xl">
+          Create your Airbnb account and unlock stays in 220+ countries.
+        </h1>
+
+        <p class="text-sm text-white/90">
+          Save wishlists, sync trips across devices, and message hosts instantly.
+        </p>
+      </div>
+
+      <div class="mt-8 space-y-5 rounded-2xl bg-white/15 p-5 backdrop-blur">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs uppercase tracking-[0.25em] text-white/70">Verified hosts</p>
+            <p class="text-2xl font-semibold">7M+</p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs uppercase tracking-[0.25em] text-white/70">Average rating</p>
+            <p class="text-2xl font-semibold">4.9/5</p>
+          </div>
         </div>
 
-        <!-- Main card -->
-        <div class="relative mx-auto flex w-full max-w-5xl flex-col overflow-hidden rounded-[32px] bg-white/80 shadow-[0_30px_80px_rgba(15,23,42,0.20)] backdrop-blur-xl md:flex-row">
-          <!-- Left promo panel -->
-          <div class="relative hidden w-full bg-gradient-to-br from-rose-600 via-rose-500 to-amber-400 p-8 text-white md:flex md:w-1/2 md:flex-col md:justify-between">
-            <div class="space-y-4">
-              <p class="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-1 text-xs font-semibold uppercase tracking-[0.25em]">
-                <span class="h-2 w-2 rounded-full bg-emerald-300 animate-ping"></span>
-                Join millions of Airbnb guests
-              </p>
-              <h1 class="text-3xl font-semibold leading-tight md:text-4xl">
-                Create your Airbnb account and unlock stays in over 220+ countries.
-              </h1>
-              <p class="text-sm text-white/90">
-                Save wishlists, sync trips across devices, message hosts instantly, and get personalized recommendations.
-              </p>
+        <ul class="space-y-3 text-sm font-medium text-white/90">
+          <li class="flex items-center gap-3">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/25 text-xs font-semibold">✓</span>
+            One profile across all devices
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/25 text-xs font-semibold">✓</span>
+            Secure bookings & 24/7 support
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/25 text-xs font-semibold">✓</span>
+            Wishlist and share trips
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- RIGHT SIGNUP FORM -->
+    <div class="flex w-full items-center justify-center bg-white/95 p-6 sm:p-8 md:w-1/2">
+      <div class="w-full max-w-md">
+
+        <div class="mb-6 space-y-2">
+          <p class="text-xs font-semibold uppercase tracking-[0.25em] text-rose-400">Airbnb</p>
+          <h2 class="text-2xl font-semibold text-gray-900 md:text-3xl">
+            Create your account
+          </h2>
+          <p class="text-sm text-gray-500">
+            Sign up using your email and password.
+          </p>
+        </div>
+
+        <form action="/signup" method="POST" class="space-y-4">
+          <%- include('../partials/errorMessages') %>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label class="text-sm font-semibold text-gray-700">First name</label>
+              <input
+                type="text"
+                name="firstName"
+                value="<%= typeof oldInput !== 'undefined' ? oldInput.firstName : '' %>"
+                required
+                class="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm shadow-sm
+                       focus:border-rose-400 focus:ring-2 focus:ring-rose-200"
+                placeholder="First name">
             </div>
 
-            <div class="mt-8 space-y-5 rounded-2xl bg-white/15 p-5 backdrop-blur">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-xs uppercase tracking-[0.25em] text-white/70">Verified hosts</p>
-                  <p class="text-2xl font-semibold">7M+</p>
-                </div>
-                <div class="text-right">
-                  <p class="text-xs uppercase tracking-[0.25em] text-white/70">Average rating</p>
-                  <p class="text-2xl font-semibold">4.9/5</p>
-                </div>
-              </div>
-
-              <ul class="space-y-3 text-sm font-medium text-white/90">
-                <li class="flex items-center gap-3">
-                  <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/25 text-xs font-semibold">✓</span>
-                  One profile across web, iOS, and Android
-                </li>
-                <li class="flex items-center gap-3">
-                  <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/25 text-xs font-semibold">✓</span>
-                  Secure payments & 24/7 support
-                </li>
-                <li class="flex items-center gap-3">
-                  <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/25 text-xs font-semibold">✓</span>
-                  Wishlist and share trips with friends
-                </li>
-              </ul>
+            <div>
+              <label class="text-sm font-semibold text-gray-700">Last name</label>
+              <input
+                type="text"
+                name="lastName"
+                value="<%= typeof oldInput !== 'undefined' ? oldInput.lastName : '' %>"
+                required
+                class="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm shadow-sm
+                       focus:border-rose-400 focus:ring-2 focus:ring-rose-200"
+                placeholder="Last name">
             </div>
           </div>
 
-          <!-- Right signup form -->
-          <div class="flex w-full items-center justify-center bg-white/95 p-6 sm:p-8 md:w-1/2">
-            <div class="w-full max-w-md">
-              <div class="mb-6 space-y-2">
-                <p class="text-xs font-semibold uppercase tracking-[0.25em] text-rose-400">Airbnb</p>
-                <h2 class="text-2xl font-semibold text-gray-900 md:text-3xl">Create your account</h2>
-                <p class="text-sm text-gray-500">
-                  Sign up to start booking stays, saving your favorite homes, and syncing trips across devices.
-                </p>
-              </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700">Email</label>
+            <input
+              type="email"
+              name="email"
+              value="<%= typeof oldInput !== 'undefined' ? oldInput.email : '' %>"
+              required
+              class="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm shadow-sm
+                     focus:border-rose-400 focus:ring-2 focus:ring-rose-200"
+              placeholder="name@email.com">
+          </div>
 
-              <form action="/signup" method="POST" class="space-y-4">
+          <div>
+            <label class="text-sm font-semibold text-gray-700">Password</label>
+            <input
+              type="password"
+              name="password"
+              required
+              minlength="6"
+              class="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm shadow-sm
+                     focus:border-rose-400 focus:ring-2 focus:ring-rose-200"
+              placeholder="At least 6 characters">
+          </div>
 
-                  <%- include('../partials/errorMessages') %>
+          <div>
+            <label class="text-sm font-semibold text-gray-700">Confirm password</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              required
+              minlength="6"
+              class="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm shadow-sm
+                     focus:border-rose-400 focus:ring-2 focus:ring-rose-200"
+              placeholder="Re-enter password">
+          </div>
 
+          <!-- ROLE -->
+          <div>
+            <p class="text-xs font-medium text-gray-700 mb-2">Select account type</p>
+            <div class="flex items-center gap-6">
+              <label class="flex items-center gap-2 text-sm">
+                <input type="radio" name="role" value="guest" required
+                       class="h-4 w-4 text-rose-500">
+                Guest
+              </label>
 
-
-                <div class="grid gap-4 sm:grid-cols-2">
-                  <div class="space-y-1.5">
-                    <label class="text-sm font-semibold text-gray-700">First name</label>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value="<%= typeof oldInput!=='undefined' ? oldInput.firstName : '' %>"
-                      required
-                      class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm shadow-sm transition focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-200"
-                      placeholder="First Name"
-                    />
-                  </div>
-                  <div class="space-y-1.5">
-                    <label class="text-sm font-semibold text-gray-700">Last name</label>
-                    <input
-                      type="text"
-                      name="lastName"
-                      value="<%= typeof oldInput!=='undefined' ? oldInput.lastName : '' %>"
-                      required
-                      class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm shadow-sm transition focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-200"
-                      placeholder="Last Name"
-                    />
-                  </div>
-                </div>
-
-                <div class="space-y-1.5">
-                  <label class="text-sm font-semibold text-gray-700">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value="<%= typeof oldInput!=='undefined' ? oldInput.email : '' %>"
-                    required
-                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm shadow-sm transition focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-200"
-                    placeholder="name@email.com"
-                  />
-                </div>
-
-                <div class="space-y-1.5">
-                  <label class="text-sm font-semibold text-gray-700">Password</label>
-                  <input
-                    type="password"
-                    name="password"
-                    value="<%= typeof oldInput!=='undefined' ? oldInput.password : '' %>"
-                    required
-                    minlength="6"
-                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm shadow-sm transition focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-200"
-                    placeholder="At least 6 characters"
-                  />
-                </div>
-
-                <div class="space-y-1.5">
-                  <label class="text-sm font-semibold text-gray-700">Confirm password</label>
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    value="<%= typeof oldInput!=='undefined' ? oldInput.confirmPassword : '' %>"
-                    required
-                    minlength="6"
-                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm shadow-sm transition focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-200"
-                    placeholder="Re-enter your password"
-                  />
-                </div>
-
-                <div class="mt-4">
-                  <p class="text-xs font-medium text-gray-700 mb-2">Select account type</p>
-                
-                  <div class="flex items-center gap-6">
-                    <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
-                      <input
-                        type="radio"
-                        name="role"
-                        value="guest"
-                        required
-                        class="h-4 w-4 text-rose-500 border-gray-300 focus:ring-rose-400"
-                      />
-                      Guest
-                    </label>
-                
-                    <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
-                      <input
-                        type="radio"
-                        name="role"
-                        value="host"
-                        required
-                        class="h-4 w-4 text-rose-500 border-gray-300 focus:ring-rose-400"
-                      />
-                      Host
-                    </label>
-                  </div>
-                </div>
-
-                <label class="flex cursor-pointer items-start gap-3 text-xs text-gray-600">
-                  <input
-                    type="checkbox"
-                    name="agree"
-                    required
-                    class="mt-[3px] h-4 w-4 rounded border-gray-300 text-rose-500 focus:ring-rose-400"
-                  />
-                  <span>
-                    I agree to Airbnb's
-                    <a href="/terms" class="font-semibold text-rose-500 hover:text-rose-600">Terms</a>
-                    and
-                    <a href="/privacy" class="font-semibold text-rose-500 hover:text-rose-600">Privacy Policy</a>.
-                  </span>
-                </label>
-
-                <button
-                  type="submit"
-                  class="relative inline-flex w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-r from-rose-500 via-rose-400 to-amber-400 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-200 transition hover:brightness-110 focus:outline-none focus:ring-4 focus:ring-rose-200/60 focus:ring-offset-2 focus:ring-offset-white"
-                >
-                  <span class="absolute inset-0 -translate-x-full bg-gradient-to-r from-white/30 via-transparent to-transparent opacity-0 transition duration-700 group-hover:translate-x-full group-hover:opacity-100"></span>
-                  Create account
-                </button>
-              </form>
-
-              <div class="my-5 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.25em] text-gray-400">
-                <span class="h-px flex-1 bg-gray-200"></span>
-                Or continue with
-                <span class="h-px flex-1 bg-gray-200"></span>
-              </div>
-
-              <div class="grid gap-3 sm:grid-cols-3">
-                <button
-                  class="flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-2.5 text-xs font-medium text-gray-700 shadow-sm transition hover:bg-gray-50"
-                  type="button"
-                >
-                  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" class="h-4 w-4" alt="Google" />
-                  Google
-                </button>
-                <button
-                  class="flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-2.5 text-xs font-medium text-gray-700 shadow-sm transition hover:bg-gray-50"
-                  type="button"
-                >
-                  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apple/apple-original.svg" class="h-4 w-4" alt="Apple" />
-                  Apple
-                </button>
-                <button
-                  class="flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-2.5 text-xs font-medium text-gray-700 shadow-sm transition hover:bg-gray-50"
-                  type="button"
-                >
-                  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/twitter/twitter-original.svg" class="h-4 w-4" alt="Twitter" />
-                  Twitter
-                </button>
-              </div>
-
-              <p class="mt-6 text-center text-sm text-gray-500">
-                Already have an account?
-                <a href="/login" class="font-semibold text-rose-500 hover:text-rose-600">Log in</a>
-              </p>
+              <label class="flex items-center gap-2 text-sm">
+                <input type="radio" name="role" value="host" required
+                       class="h-4 w-4 text-rose-500">
+                Host
+              </label>
             </div>
           </div>
-        </div>
-      </section>
 
+          <!-- TERMS -->
+          <label class="flex items-start gap-3 text-xs text-gray-600">
+            <input type="checkbox" name="agree" required
+                   class="mt-1 h-4 w-4 text-rose-500">
+            <span>
+              I agree to Airbnb’s
+              <a href="/terms" class="font-semibold text-rose-500">Terms</a> and
+              <a href="/privacy" class="font-semibold text-rose-500">Privacy Policy</a>.
+            </span>
+          </label>
+
+          <button
+            type="submit"
+            class="w-full rounded-2xl bg-gradient-to-r from-rose-500 via-rose-400 to-amber-400
+                   py-3 text-sm font-semibold text-white shadow-lg hover:brightness-110
+                   focus:ring-4 focus:ring-rose-200">
+            Create account
+          </button>
+        </form>
+
+        <p class="mt-6 text-center text-sm text-gray-500">
+          Already have an account?
+          <a href="/login" class="font-semibold text-rose-500 hover:text-rose-600">
+            Log in
+          </a>
+        </p>
+
+      </div>
+    </div>
+  </div>
+</section>
