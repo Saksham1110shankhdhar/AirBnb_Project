@@ -1,23 +1,102 @@
-<%- include('../partials/head') %>
+<%- include('../partials/head', { pageTitle: 'Booking Confirmed' }) %>
 <%- include('../partials/nav') %>
 
-<main class="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#FFF6D8] to-[#FFE8EC]">
-  <div class="bg-white p-10 rounded-3xl shadow-2xl text-center max-w-md">
-    <h1 class="text-3xl font-extrabold text-green-600 mb-4">
-      Booking Confirmed
-    </h1>
-    <p class="text-slate-600 mb-6">
-      Your booking has been successfully placed.
-    </p>
+<style>
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
-    <a href="/"
-       class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r
-              from-rose-500 to-orange-500 text-white font-bold">
-      Back to Home
-    </a>
+@keyframes pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.success-bg {
+  background: linear-gradient(
+    -45deg,
+    #e9f0ff,
+    #fff1d6,
+    #ffe4ec,
+    #e9fff3
+  );
+  background-size: 400% 400%;
+  animation: gradientMove 20s ease infinite;
+}
+
+.success-glow {
+  position: absolute;
+  inset: -35px;
+  border-radius: 40px;
+  background: linear-gradient(
+    135deg,
+    rgba(34,197,94,0.45),
+    rgba(16,185,129,0.35),
+    rgba(255,153,51,0.35)
+  );
+  filter: blur(50px);
+  z-index: -1;
+}
+</style>
+
+<main class="min-h-screen success-bg flex items-center justify-center px-6">
+
+  <div class="relative w-full max-w-lg">
+
+    <!-- Glow -->
+    <div class="success-glow"></div>
+
+    <!-- Card -->
+    <div class="bg-white/85 backdrop-blur-2xl
+                rounded-[2.5rem]
+                shadow-[0_60px_120px_-40px_rgba(0,0,0,0.45)]
+                border border-white/60
+                p-12 text-center">
+
+      <!-- Checkmark -->
+      <div class="mx-auto mb-8 w-24 h-24 rounded-full
+                  bg-gradient-to-br from-emerald-400 to-green-600
+                  flex items-center justify-center
+                  shadow-[0_25px_50px_-12px_rgba(16,185,129,0.85)]
+                  animate-[pop_0.5s_ease-out]">
+
+        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" stroke-width="3"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+
+      <!-- Text -->
+      <h1 class="text-4xl font-extrabold text-slate-900 mb-4">
+        Booking Confirmed 🎉
+      </h1>
+
+      <p class="text-slate-600 text-lg leading-relaxed mb-10">
+        Your payment was successful and your stay has been reserved.
+        A confirmation email with all details has been sent to you.
+      </p>
+
+      <!-- CTA -->
+      <a href="/"
+         class="inline-block w-full py-5 rounded-2xl
+                bg-gradient-to-r from-rose-500 to-orange-500
+                text-white font-bold text-lg
+                shadow-[0_30px_60px_-15px_rgba(255,56,92,0.65)]
+                hover:brightness-110 hover:scale-[1.04]
+                active:scale-[0.96]
+                transition-all duration-300">
+        Back to Home
+      </a>
+
+      <p class="text-sm text-slate-500 mt-6">
+        Thank you for booking with us ✨
+      </p>
+    </div>
   </div>
+
 </main>
 
 </body>
 </html>
-

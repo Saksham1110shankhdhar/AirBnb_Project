@@ -1,189 +1,303 @@
 <%- include('../partials/head', { pageTitle: 'Confirm Booking' }) %>
 <%- include('../partials/nav') %>
 
-<main class="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#FFF6D8] to-[#FFE8EC]">
+<style>
 
-  <div class="bg-white rounded-3xl shadow-2xl p-10 w-[360px] text-center">
-    <h2 class="text-2xl font-extrabold text-green-600 mb-2">
-      Confirm Your Booking
-    </h2>
+.premium-card {
+  isolation: isolate;
+}
 
-    <p class="text-slate-600 mb-4">
-      You're about to book <strong><%= home.houseName %></strong><br>
-      in <%= home.location %>
-    </p>
+  /* ===== Inner Glass Cards ===== */
+.glass-card {
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.85),
+    rgba(255,255,255,0.65)
+  );
+  backdrop-filter: blur(18px);
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.8),
+    0 18px 40px -18px rgba(0,0,0,0.35);
+}
 
-    <div class="text-3xl font-black text-slate-800 mb-6">
-      ₹<%= home.price %> / night
+/* ===== Price Highlight Card ===== */
+.price-glass {
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.9),
+    rgba(255,230,240,0.75)
+  );
+  backdrop-filter: blur(20px);
+  border-radius: 26px;
+  border: 1px solid rgba(255,255,255,0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.85),
+    0 30px 60px -20px rgba(0,0,0,0.45);
+}
+
+  /* ===== Premium Payment Card ===== */
+.premium-card {
+  position: relative;
+  border-radius: 42px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(28px);
+  box-shadow:
+    0 60px 120px -40px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+.premium-card::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 44px;
+  background: linear-gradient(
+    135deg,
+    rgba(255,56,92,0.55),
+    rgba(255,153,51,0.55)
+  );
+  filter: blur(18px);
+  z-index: -1;
+}
+
+/* ===== Background ===== */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animated-bg {
+  background: linear-gradient(-45deg,#fff1d6,#ffe4ec,#e9f0ff,#fff7e6);
+  background-size: 400% 400%;
+  animation: gradientMove 18s ease infinite;
+}
+
+/* ===== Floating blobs ===== */
+.blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.4;
+  animation: float 20s infinite alternate ease-in-out;
+}
+@keyframes float {
+  from { transform: translateY(0); }
+  to { transform: translateY(-70px); }
+}
+
+/* ===== Cancel Modal ===== */
+#cancelModal {
+  display: none;
+}
+#cancelModal.active {
+  display: flex;
+}
+/* Prevent glass cards from visually overlapping */
+.glass-card,
+.price-glass {
+  isolation: isolate;
+}
+
+</style>
+
+<main class="min-h-screen animated-bg relative overflow-hidden flex items-center justify-center px-6 py-28">
+
+  <!-- BLOBS -->
+  <div class="blob w-96 h-96 bg-pink-300 top-[-120px] left-[-120px]"></div>
+  <div class="blob w-[420px] h-[420px] bg-orange-300 top-1/3 right-[-160px]"></div>
+  <div class="blob w-[380px] h-[380px] bg-indigo-300 bottom-[-120px] left-1/4"></div>
+
+  <!-- CONTENT -->
+  <section class="relative z-10 w-full max-w-5xl">
+
+    <!-- HEADER -->
+    <div class="text-center mb-14">
+      <span class="inline-block px-6 py-2 rounded-full bg-gradient-to-r from-pink-500 to-orange-400 text-white text-sm font-semibold shadow-lg">
+        Step 2 of 2 · Secure Checkout
+      </span>
+
+      <h1 class="mt-6 text-4xl md:text-5xl font-extrabold text-slate-900">
+        Confirm your booking
+      </h1>
+      <p class="mt-3 text-lg text-slate-700">
+        Complete your payment and reserve your stay
+      </p>
     </div>
 
-    <!-- IMPORTANT -->
-    <button
-      id="payBtn"
-      class="w-full py-4 rounded-2xl text-white font-bold text-lg
-             bg-gradient-to-r from-pink-500 via-rose-500 to-orange-500
-             hover:brightness-110 transition shadow-xl
-             disabled:opacity-50 disabled:cursor-not-allowed">
-      <span id="btnText">Pay & Confirm Booking</span>
-      <span id="btnLoader" class="hidden">Processing...</span>
-    </button>
-  </div>
+    <!-- CARD -->
+    <div class="premium-card p-10 md:p-14">
 
+      <!-- LOCKED GRID -->
+      <div class="grid grid-cols-2 gap-8 items-start">
+    
+
+      <!-- LEFT -->
+      <div class="grid grid-rows-[auto_auto_auto] gap-6">
+
+        <div class="glass-card p-6">
+          <h2 class="text-2xl font-bold  text-slate-900"><%= home.houseName %></h2>
+          <p class="text-slate-500 mt-1"><%= home.location %></p>
+        </div>
+
+        <div class="price-glass relative overflow-hidden p-8">
+
+
+        <div class="absolute top-0 right-0 w-28 h-28
+              bg-gradient-to-br from-pink-400/20 to-orange-400/10
+              rounded-bl-full"></div>
+
+
+
+          <p class="text-xs uppercase tracking-wider font-semibold text-slate-500">Price per night</p>
+          <div class="flex items-end gap-2 mt-3">
+            <span class="text-6xl font-extrabold tracking-tight text-slate-900">
+              ₹<%= home.price %>
+            </span>
+            
+            <span class="text-slate-500 mb-2">/ night</span>
+          </div>
+          <p class="text-xs text-slate-600 mt-3 opacity-80">
+            Taxes included · No hidden charges
+          </p>
+          
+        </div>
+
+        <div class="flex items-center gap-3 text-sm font-semibold text-emerald-600">
+          <span class="h-3 w-3 rounded-full bg-emerald-500"></span>
+          Secure payment powered by Razorpay
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="grid grid-rows-[auto_auto] gap-6">
+
+        <!-- What happens next -->
+        <div class="glass-card p-6 relative z-10">
+          <h3 class="text-lg font-bold text-slate-900 mb-4">
+            What happens next?
+          </h3>
+      
+          <ul class="space-y-3 text-sm text-slate-700">
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-500">✔</span>
+              Redirected to Razorpay
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-500">✔</span>
+              Payment processed securely
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-500">✔</span>
+              Booking confirmed instantly
+            </li>
+          </ul>
+        </div>
+      
+        <!-- Pay button -->
+        <div class="pt-6 border-t border-slate-200/60">
+          <button id="payBtn"
+            class="w-full py-5 rounded-2xl text-lg font-bold text-white
+                   bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400
+                   shadow-[0_30px_60px_-15px_rgba(255,56,92,0.65)]
+                   hover:brightness-110 hover:scale-[1.03]
+                   active:scale-[0.96]
+                   transition-all duration-300">
+            <span id="btnText">Pay ₹<%= home.price %> & Confirm</span>
+            <span id="btnLoader" class="hidden">Processing…</span>
+          </button>
+      
+          <p class="text-xs text-slate-600 text-center mt-4">
+            By confirming, you agree to our terms & cancellation policy
+          </p>
+        </div>
+      
+      </div>
+      
+      </div>
+    </div>
+    </div>
+  
+  </section>
 </main>
 
-<!-- Razorpay MUST be loaded -->
-<script src="https://checkout.razorpay.com/v1/checkout.js" 
-        onerror="console.error('❌ Failed to load Razorpay script')"></script>
+<!-- CANCEL MODAL -->
+<div id="cancelModal" class="fixed inset-0 z-50 items-center justify-center bg-black/40 backdrop-blur">
+  <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl animate-scaleIn">
+    <h3 class="text-xl font-bold text-slate-900">Payment cancelled</h3>
+    <p class="text-slate-600 mt-2">No money was deducted. You can continue or cancel your booking.</p>
+
+    <div class="flex gap-4 mt-6">
+      <button onclick="closeCancelModal()" class="flex-1 py-3 rounded-xl bg-slate-200 font-semibold">
+        Continue
+      </button>
+      <a href="/homes" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-orange-400 text-white font-semibold">
+        Cancel booking
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
-// Wait for both DOM and Razorpay to be ready
-function initPayment() {
-  const payBtn = document.getElementById('payBtn');
+const payBtn = document.getElementById('payBtn');
+const btnText = document.getElementById('btnText');
+const btnLoader = document.getElementById('btnLoader');
+const cancelModal = document.getElementById('cancelModal');
 
-  if (!payBtn) {
-    console.error('❌ Pay button not found');
-    return;
-  }
+function resetBtn() {
+  payBtn.disabled = false;
+  btnText.classList.remove('hidden');
+  btnLoader.classList.add('hidden');
+}
 
-  // Check if Razorpay is loaded
-  if (typeof Razorpay === 'undefined') {
-    console.error('❌ Razorpay is not loaded. Please check your internet connection.');
-    alert('Payment gateway is not available. Please refresh the page and try again.');
-    return;
-  }
+function openCancelModal() {
+  cancelModal.classList.add('active');
+}
+function closeCancelModal() {
+  cancelModal.classList.remove('active');
+}
 
-  const homePrice = <%- home.price %>;
-  const homeId = '<%= home._id %>';
-  const razorpayKey = '<%= razorpayKeyId %>';
+payBtn.addEventListener('click', async () => {
+  payBtn.disabled = true;
+  btnText.classList.add('hidden');
+  btnLoader.classList.remove('hidden');
 
-  if (!razorpayKey) {
-    console.error('❌ Razorpay key is missing');
-    alert('Payment configuration error. Please contact support.');
-    return;
-  }
+  try {
+    const res = await fetch('/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: <%- home.price %> })
+    });
 
-  payBtn.addEventListener('click', async () => {
-    try {
-      // Disable button and show loading
-      payBtn.disabled = true;
-      document.getElementById('btnText').classList.add('hidden');
-      document.getElementById('btnLoader').classList.remove('hidden');
-      
-      console.log('👉 Pay button clicked');
-      console.log('💰 Amount:', homePrice);
-      console.log('🔑 Razorpay Key:', razorpayKey ? 'Present' : 'Missing');
+    const order = await res.json();
 
-      if (!homePrice || homePrice <= 0) {
-        throw new Error('Invalid booking amount');
-      }
+    const rzp = new Razorpay({
+      key: "<%= razorpayKeyId %>",
+      amount: order.amount,
+      currency: "INR",
+      order_id: order.id,
 
-      const res = await fetch('/create-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: homePrice
-        })
-      });
+      handler: async () => {
+        await fetch('/book/<%= home._id %>', { method: 'POST' });
+        window.location.href = '/booking/success';
+      },
 
-      console.log('📡 Order creation response status:', res.status);
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        console.error('❌ Order creation failed:', errorData);
-        throw new Error(errorData.error || 'Failed to create order');
-      }
-
-      const order = await res.json();
-      console.log('✅ Order created:', order);
-      
-      if (!order || !order.id) {
-        console.error('❌ Invalid order response:', order);
-        throw new Error('Invalid order response from server');
-      }
-
-      const options = {
-        key: razorpayKey,
-        amount: order.amount,
-        currency: "INR",
-        name: "Hamara Airbnb",
-        description: "Home Booking",
-        order_id: order.id,
-
-        handler: async function (response) {
-          console.log('✅ Payment success', response);
-          
-          try {
-            // Show loading state
-            payBtn.disabled = true;
-            document.getElementById('btnText').textContent = 'Saving booking...';
-            
-            const bookingRes = await fetch('/book/' + homeId, { 
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' }
-            });
-
-            console.log('📝 Booking response status:', bookingRes.status);
-
-            if (!bookingRes.ok) {
-              const errorData = await bookingRes.json().catch(() => ({ error: 'Unknown error' }));
-              console.error('❌ Booking failed:', errorData);
-              throw new Error(errorData.error || 'Booking failed');
-            }
-
-            const bookingData = await bookingRes.json();
-            console.log('✅ Booking saved successfully:', bookingData);
-            
-            // Redirect to success page
-            window.location.href = '/booking/success';
-            
-          } catch (err) {
-            console.error('❌ Booking error:', err);
-            alert('Payment successful but booking failed: ' + (err.message || 'Please contact support.'));
-            
-            // Re-enable button
-            payBtn.disabled = false;
-            document.getElementById('btnText').textContent = 'Pay & Confirm Booking';
-          }
-        },
-        prefill: {
-          name: "<%= user && user.name ? user.name : '' %>",
-          email: "<%= user && user.email ? user.email : '' %>"
-        },
-        theme: {
-          color: "#FF385C"
+      modal: {
+        ondismiss: () => {
+          resetBtn();
+          openCancelModal();
         }
-      };
+      }
+    });
 
-      const rzp = new Razorpay(options);
-      rzp.open();
-
-    } catch (err) {
-      console.error('❌ Payment error:', err);
-      alert('Payment failed: ' + (err.message || 'Please try again.'));
-      
-      // Re-enable button
-      payBtn.disabled = false;
-      document.getElementById('btnText').classList.remove('hidden');
-      document.getElementById('btnLoader').classList.add('hidden');
-    }
-  });
-}
-
-// Initialize when DOM is ready and Razorpay is loaded
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    // Wait a bit for Razorpay script to load
-    setTimeout(initPayment, 100);
-  });
-} else {
-  // DOM already loaded, wait for Razorpay
-  setTimeout(initPayment, 100);
-}
-
-// Fallback: try again after 1 second if Razorpay still not loaded
-setTimeout(() => {
-  if (typeof Razorpay === 'undefined') {
-    console.warn('⚠️ Razorpay still not loaded after 1 second');
+    rzp.open();
+  } catch {
+    resetBtn();
+    openCancelModal();
   }
-}, 1000);
+});
 </script>
