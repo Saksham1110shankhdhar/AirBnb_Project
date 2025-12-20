@@ -3,7 +3,7 @@
   mainClass: 'pt-0' 
 }) %>
 
-<% if (loginRequired) { %>
+<% if (typeof loginRequired !== 'undefined' && loginRequired) { %>
   <div class="fixed top-24 left-1/2 z-50 -translate-x-1/2 animate-pop">
     <div
       class="flex items-center gap-4 rounded-2xl px-6 py-4
