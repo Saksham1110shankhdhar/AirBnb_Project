@@ -2,7 +2,7 @@ const express = require('express');
 const storeRouter = express.Router();
 
 const isAuth = require('../middleware/isAuth');
-const storeController = require('../Controllers/storeController');
+const storeController = require('../Controllers/StoreController');
 
 storeRouter.get('/', storeController.getIndex);
 
