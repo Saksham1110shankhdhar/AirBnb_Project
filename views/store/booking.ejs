@@ -1,5 +1,10 @@
 <%- include('../partials/head', { pageTitle: 'Confirm Booking' }) %>
 <%- include('../partials/nav') %>
+<%
+  const razorpayTestModeEnabled = typeof isRazorpayTestMode !== 'undefined'
+    ? !!isRazorpayTestMode
+    : false;
+%>
 
 <style>
 
@@ -169,6 +174,11 @@
           <span class="h-3 w-3 rounded-full bg-emerald-500"></span>
           Secure payment powered by Razorpay
         </div>
+        <% if (razorpayTestModeEnabled) { %>
+          <div class="mt-2 text-xs font-semibold text-amber-600">
+            Test mode enabled: payments are simulated and no real money is deducted.
+          </div>
+        <% } %>
       </div>
 
       <!-- RIGHT -->
@@ -226,8 +236,8 @@
 <!-- CANCEL MODAL -->
 <div id="cancelModal" class="fixed inset-0 z-50 items-center justify-center bg-black/40 backdrop-blur">
   <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl animate-scaleIn">
-    <h3 class="text-xl font-bold text-slate-900">Payment cancelled</h3>
-    <p class="text-slate-600 mt-2">No money was deducted. You can continue or cancel your booking.</p>
+    <h3 id="modalTitle" class="text-xl font-bold text-slate-900">Payment cancelled</h3>
+    <p id="modalMessage" class="text-slate-600 mt-2">No money was deducted. You can continue or cancel your booking.</p>
 
     <div class="flex gap-4 mt-6">
       <button onclick="closeCancelModal()" class="flex-1 py-3 rounded-xl bg-slate-200 font-semibold">
@@ -247,6 +257,13 @@ const payBtn = document.getElementById('payBtn');
 const btnText = document.getElementById('btnText');
 const btnLoader = document.getElementById('btnLoader');
 const cancelModal = document.getElementById('cancelModal');
+const modalTitle = document.getElementById('modalTitle');
+const modalMessage = document.getElementById('modalMessage');
+const homeId = <%- JSON.stringify(String(home._id)) %>;
+const checkoutKey = <%- JSON.stringify(razorpayKeyId || '') %>;
+const isTestMode = <%- JSON.stringify(razorpayTestModeEnabled) %>;
+const customerName = <%- JSON.stringify(user && user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : '') %>;
+const customerEmail = <%- JSON.stringify(user && user.email ? user.email : '') %>;
 
 function resetBtn() {
   payBtn.disabled = false;
@@ -254,7 +271,9 @@ function resetBtn() {
   btnLoader.classList.add('hidden');
 }
 
-function openCancelModal() {
+function openStatusModal(title, message) {
+  modalTitle.textContent = title;
+  modalMessage.textContent = message;
   cancelModal.classList.add('active');
 }
 function closeCancelModal() {
@@ -267,37 +286,114 @@ payBtn.addEventListener('click', async () => {
   btnLoader.classList.remove('hidden');
 
   try {
+    if (!window.Razorpay) {
+      throw new Error('Razorpay checkout failed to load. Please refresh the page and try again.');
+    }
+
     const res = await fetch('/create-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: <%- home.price %> })
+      body: JSON.stringify({ homeId })
     });
 
     const order = await res.json();
+    if (!res.ok || !order.id) {
+      throw new Error(order.error || 'Unable to start payment right now.');
+    }
 
     const rzp = new Razorpay({
-      key: "<%= razorpayKeyId %>",
+      key: checkoutKey,
       amount: order.amount,
-      currency: "INR",
+      currency: order.currency,
       order_id: order.id,
+      name: "Hamara AirBnb",
+      description: "Booking for <%= home.houseName %>",
+      method: {
+        upi: true,
+        card: true,
+        netbanking: true,
+        wallet: true,
+        emi: true,
+        paylater: true
+      },
+      config: {
+        display: {
+          blocks: {
+            upi: {
+              name: 'Pay by UPI',
+              instruments: [{ method: 'upi' }]
+            },
+            other: {
+              name: 'Other payment methods',
+              instruments: [
+                { method: 'card' },
+                { method: 'netbanking' },
+                { method: 'wallet' },
+                { method: 'emi' },
+                { method: 'paylater' }
+              ]
+            }
+          },
+          sequence: ['block.upi', 'block.other'],
+          preferences: {
+            show_default_blocks: false
+          }
+        }
+      },
+      prefill: {
+        name: customerName,
+        email: customerEmail
+      },
 
-      handler: async () => {
-        await fetch('/book/<%= home._id %>', { method: 'POST' });
-        window.location.href = '/booking/success';
+      handler: async (paymentResponse) => {
+        const verifyRes = await fetch('/verify-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            homeId,
+            ...paymentResponse
+          })
+        });
+
+        const verification = await verifyRes.json();
+        if (!verifyRes.ok || !verification.success) {
+          throw new Error(verification.error || 'Payment verification failed.');
+        }
+
+        window.location.href = verification.redirectUrl || '/booking/success';
       },
 
       modal: {
         ondismiss: () => {
           resetBtn();
-          openCancelModal();
+          openStatusModal(
+            'Payment cancelled',
+            'No money was deducted. You can continue or cancel your booking.'
+          );
         }
       }
     });
 
+    rzp.on('payment.failed', function (response) {
+      resetBtn();
+      openStatusModal(
+        'Payment not completed',
+        response.error.description || 'Razorpay could not complete the payment. Please try again.'
+      );
+    });
+
     rzp.open();
-  } catch {
+  } catch (error) {
+    console.error('CHECKOUT ERROR:', error);
     resetBtn();
-    openCancelModal();
+    openStatusModal(
+      'Payment not completed',
+      error.message || 'We could not start the Razorpay checkout. Please try again.'
+    );
   }
 });
+
+if (isTestMode) {
+  console.info('Razorpay test mode active: checkout success is simulated by test credentials.');
+}
 </script>

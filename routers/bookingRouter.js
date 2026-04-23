@@ -33,7 +33,8 @@ bookingRouter.get(
         pageTitle: 'Confirm Booking',
         isLoggedIN: req.session.isLoggedIN,
         user: req.session.user,
-        razorpayKeyId: process.env.RAZORPAY_KEY_ID
+        razorpayKeyId: process.env.RAZORPAY_KEY_ID,
+        isRazorpayTestMode: (process.env.RAZORPAY_KEY_ID || '').trim().startsWith('rzp_test_')
       });
     } catch (err) {
       console.error('BOOKING PAGE ERROR:', err);

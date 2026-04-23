@@ -1,142 +1,229 @@
 const express = require('express');
+const crypto = require('crypto');
 const Razorpay = require('razorpay');
+const Booking = require('../modules/Booking');
+const Home = require('../modules/Home');
+const isAuth = require('../middleware/isAuth');
+
 const router = express.Router();
 
-// Create Razorpay instance lazily to ensure env vars are loaded
+function getTrimmedCredentials() {
+  return {
+    keyId: (process.env.RAZORPAY_KEY_ID || '').trim(),
+    keySecret: (process.env.RAZORPAY_KEY_SECRET || '').trim(),
+  };
+}
+
 function getRazorpayInstance(keyId, keySecret) {
-  // Trim whitespace from credentials (common issue in .env files)
-  const trimmedKeyId = (keyId || '').trim();
-  const trimmedKeySecret = (keySecret || '').trim();
-  
-  if (!trimmedKeyId || !trimmedKeySecret) {
+  if (!keyId || !keySecret) {
     throw new Error('Razorpay credentials not configured');
   }
-  
-  // Validate key format
-  if (!trimmedKeyId.startsWith('rzp_')) {
+
+  if (!keyId.startsWith('rzp_')) {
     throw new Error('Invalid Razorpay Key ID format. Should start with "rzp_"');
   }
-  
-  if (trimmedKeySecret.length < 20) {
+
+  if (keySecret.length < 20) {
     throw new Error('Invalid Razorpay Key Secret format');
   }
-  
+
   return new Razorpay({
-    key_id: trimmedKeyId,
-    key_secret: trimmedKeySecret
+    key_id: keyId,
+    key_secret: keySecret
   });
 }
 
-router.post('/create-order', async (req, res) => {
+router.post('/create-order', isAuth, async (req, res) => {
+  const { keyId, keySecret } = getTrimmedCredentials();
+
   try {
-    // Get and trim credentials (remove any whitespace)
-    let keyId = process.env.RAZORPAY_KEY_ID;
-    let keySecret = process.env.RAZORPAY_KEY_SECRET;
-    
-    // Trim whitespace (common issue in .env files)
-    if (keyId) keyId = keyId.trim();
-    if (keySecret) keySecret = keySecret.trim();
-    
-    // Debug logging (without exposing full secrets)
-    console.log('🔍 Checking Razorpay credentials...');
+    console.log('Checking Razorpay credentials...');
     console.log('   Key ID present:', !!keyId, keyId ? `(${keyId.substring(0, 12)}...)` : 'MISSING');
-    console.log('   Key ID length:', keyId ? keyId.length : 0);
     console.log('   Key Secret present:', !!keySecret, keySecret ? `(${keySecret.substring(0, 8)}...)` : 'MISSING');
-    console.log('   Key Secret length:', keySecret ? keySecret.length : 0);
-    console.log('   Current NODE_ENV:', process.env.NODE_ENV || 'production');
-    const envFile = `.env.${process.env.NODE_ENV || 'production'}`;
-    console.log('   Expected .env file:', envFile);
-    
+
     if (!keyId || !keySecret) {
-      console.error('❌ Razorpay credentials missing in environment variables');
-      console.error('   Looking for: RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET');
-      console.error('   Please check your .env file');
-      return res.status(500).json({ 
-        error: 'Payment gateway configuration error. Please contact support.' 
+      return res.status(500).json({
+        error: 'Payment gateway configuration error. Please contact support.'
       });
     }
-    
-    // Validate key format
-    if (!keyId.startsWith('rzp_')) {
-      console.error('❌ Invalid Key ID format. Should start with "rzp_"');
-      console.error('   Your Key ID starts with:', keyId.substring(0, 5));
-      return res.status(500).json({ 
-        error: 'Invalid Razorpay Key ID format. Please check your credentials.' 
-      });
-    }
-    
-    if (keySecret.length < 20) {
-      console.error('❌ Key Secret appears to be too short');
-      return res.status(500).json({ 
-        error: 'Invalid Razorpay Key Secret. Please check your credentials.' 
-      });
-    }
-    
-    // Create Razorpay instance with validated and trimmed credentials
+
     const razorpay = getRazorpayInstance(keyId, keySecret);
+    const { homeId } = req.body;
 
-    console.log('REQ BODY:', req.body);
-
-    const amount = req.body.amount;
-
-    if (!amount || amount <= 0) {
-      return res.status(400).json({ error: 'Invalid amount' });
+    if (!homeId) {
+      return res.status(400).json({ error: 'Home ID is required' });
     }
 
-    // Validate amount is a number
-    const amountNum = Number(amount);
-    if (isNaN(amountNum)) {
-      return res.status(400).json({ error: 'Amount must be a valid number' });
+    const home = await Home.findById(homeId);
+    if (!home) {
+      return res.status(404).json({ error: 'Selected home was not found' });
     }
 
-    console.log('💰 Creating Razorpay order for amount:', amountNum, 'INR');
-    console.log('   Using Key ID:', keyId.substring(0, 12) + '...');
-    
-    // Ensure amount is at least 1 rupee (100 paise) for Razorpay
+    const amountNum = Number(home.price);
+    if (Number.isNaN(amountNum) || amountNum <= 0) {
+      return res.status(400).json({ error: 'Invalid home price' });
+    }
+
     const amountInPaise = Math.max(100, Math.round(amountNum * 100));
-    console.log('   Amount in paise:', amountInPaise);
-
     const order = await razorpay.orders.create({
-      amount: amountInPaise, // INR → paise (must be integer, minimum 100)
+      amount: amountInPaise,
       currency: 'INR',
-      receipt: 'receipt_' + Date.now()
+      receipt: `receipt_${Date.now()}`,
+      notes: {
+        homeId: String(home._id),
+        userId: String(req.session.user._id)
+      }
     });
 
-    console.log('✅ Order created successfully:', order.id);
     res.json(order);
   } catch (err) {
-    console.error('❌ ORDER ERROR:', err);
-    
-    // Provide more specific error messages
+    console.error('ORDER ERROR:', err);
+
     if (err.statusCode === 401) {
-      console.error('🔐 Razorpay Authentication Failed (401)');
-      console.error('   Key ID used:', keyId ? keyId.substring(0, 12) + '...' : 'N/A');
-      console.error('   This usually means:');
-      console.error('   1. RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET do not match (from different accounts)');
-      console.error('   2. The keys are incorrect or have been regenerated');
-      console.error('   3. The keys have been revoked or expired');
-      console.error('   4. There are extra spaces, quotes, or special characters in your .env file');
-      console.error('');
-      console.error('   SOLUTION:');
-      console.error('   1. Go to https://dashboard.razorpay.com/app/keys');
-      console.error('   2. Make sure you copy BOTH Key ID and Key Secret from the SAME account');
-      console.error('   3. In your .env.production file, ensure:');
-      console.error('      RAZORPAY_KEY_ID=rzp_test_xxxxxxxxxxxxx  (no spaces, no quotes)');
-      console.error('      RAZORPAY_KEY_SECRET=your_secret_here    (no spaces, no quotes)');
-      console.error('   4. Restart your server after updating the .env file');
-      return res.status(500).json({ 
-        error: 'Authentication failed. Please verify your Razorpay Key ID and Key Secret match in the Razorpay Dashboard.' 
+      return res.status(500).json({
+        error: 'Authentication failed. Please verify your Razorpay Key ID and Key Secret match in the Razorpay Dashboard.'
       });
     }
-    
+
     if (err.error && err.error.description) {
-      return res.status(500).json({ 
-        error: err.error.description || 'Order creation failed' 
+      return res.status(500).json({
+        error: err.error.description
       });
     }
-    
-    res.status(500).json({ 
-      error: err.message || 'Order creation failed. Please try again.' 
+
+    res.status(500).json({
+      error: err.message || 'Order creation failed. Please try again.'
+    });
+  }
+});
+
+router.post('/verify-payment', isAuth, async (req, res) => {
+  try {
+    const {
+      homeId,
+      razorpay_order_id: orderId,
+      razorpay_payment_id: paymentId,
+      razorpay_signature: signature
+    } = req.body;
+
+    if (!homeId || !orderId || !paymentId || !signature) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing payment details. Please try again.'
+      });
+    }
+
+    const { keyId, keySecret } = getTrimmedCredentials();
+    if (!keyId || !keySecret) {
+      return res.status(500).json({
+        success: false,
+        error: 'Payment gateway configuration error. Please contact support.'
+      });
+    }
+
+    const expectedSignature = crypto
+      .createHmac('sha256', keySecret)
+      .update(`${orderId}|${paymentId}`)
+      .digest('hex');
+
+    if (expectedSignature !== signature) {
+      return res.status(400).json({
+        success: false,
+        error: 'Payment verification failed. Please try again.'
+      });
+    }
+
+    const razorpay = getRazorpayInstance(keyId, keySecret);
+    const payment = await razorpay.payments.fetch(paymentId);
+
+    if (!payment || payment.order_id !== orderId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Payment details do not match the order.'
+      });
+    }
+
+    if (!['authorized', 'captured'].includes(payment.status)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Payment was not completed successfully.'
+      });
+    }
+
+    if (payment.currency !== 'INR') {
+      return res.status(400).json({
+        success: false,
+        error: 'Unexpected payment currency.'
+      });
+    }
+
+    const home = await Home.findById(homeId);
+    if (!home) {
+      return res.status(404).json({
+        success: false,
+        error: 'Selected home was not found'
+      });
+    }
+
+    const expectedAmountInPaise = Math.max(100, Math.round(Number(home.price) * 100));
+    if (payment.amount !== expectedAmountInPaise) {
+      return res.status(400).json({
+        success: false,
+        error: 'Payment amount mismatch. Booking was not confirmed.'
+      });
+    }
+
+    const currentUserId = String(req.session.user._id);
+    const paymentNotesUserId = payment.notes && payment.notes.userId ? String(payment.notes.userId) : '';
+    const paymentNotesHomeId = payment.notes && payment.notes.homeId ? String(payment.notes.homeId) : '';
+
+    if (paymentNotesUserId && paymentNotesUserId !== currentUserId) {
+      return res.status(403).json({
+        success: false,
+        error: 'This payment does not belong to the current user.'
+      });
+    }
+
+    if (paymentNotesHomeId && paymentNotesHomeId !== String(homeId)) {
+      return res.status(400).json({
+        success: false,
+        error: 'This payment is for a different booking.'
+      });
+    }
+
+    const existingBooking = await Booking.findOne({
+      home: homeId,
+      user: req.session.user._id,
+      paymentId
+    });
+
+    if (existingBooking) {
+      return res.json({
+        success: true,
+        bookingId: existingBooking._id,
+        redirectUrl: '/booking/success'
+      });
+    }
+
+    const booking = await Booking.create({
+      home: homeId,
+      user: req.session.user._id,
+      orderId,
+      paymentId,
+      paymentSignature: signature,
+      paymentStatus: 'paid'
+    });
+
+    res.json({
+      success: true,
+      bookingId: booking._id,
+      redirectUrl: '/booking/success'
+    });
+  } catch (err) {
+    console.error('VERIFY PAYMENT ERROR:', err);
+    res.status(500).json({
+      success: false,
+      error: err.message || 'Payment verification failed. Please try again.'
     });
   }
 });
